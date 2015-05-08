@@ -1,0 +1,74 @@
+form {
+	position: relative;
+	width: 550px
+}
+
+input[type=text], input[type=file], select, input[type=button] {
+	width: 375px;
+	display: block;
+	font-family: Courier New;
+	font-size: 10pt
+}
+
+input[type=text], select, textarea, div.formControlBlock {
+	margin-bottom: 15px
+}
+
+a {
+	text-decoration: none;
+	color: blue
+}
+
+a:hover {
+	text-decoration: underline
+}
+
+select.comboDropdown {
+	display: inline;
+	margin-bottom: 3px
+}
+
+input[type=submit], input[type=reset] {
+	font-size: 12pt
+}
+
+div.comboLabel {
+	width: 200px;
+	display: inline-block
+}
+
+div.filebox, table {
+	margin-bottom: 15px
+}
+
+div.formField {
+	float: right
+}
+
+div.formDiv {
+    float: left;
+    clear: both;
+    display: inline
+}
+
+div.formLabel {
+    float: left;
+    clear: both;
+    margin-top: 2px
+}
+
+textarea {
+	width: 375px;
+	height: 150px;
+	display: block
+}
+
+p {
+	text-align: left;
+	vertical-align: top
+}
+
+td,th {
+	text-align: center
+}
+f

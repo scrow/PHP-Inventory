@@ -1,0 +1,16 @@
+<?php
+
+/**
+ *
+ * Configuration definitions
+ *
+ */
+
+class Config {
+	
+	const dbHost = 'myserver.mydomain.net';
+	const dbName = 'database';
+	const dbUser = 'user';
+	const dbPass = 'password';
+
+}
