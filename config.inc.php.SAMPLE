@@ -8,9 +8,10 @@
 
 class Config {
 	
-	const dbHost = 'myserver.mydomain.net';
-	const dbName = 'database';
-	const dbUser = 'user';
-	const dbPass = 'password';
+	// The values below will work if using the bundled Vagrant setup
+	const dbHost = 'localhost';
+	const dbName = 'inventory';
+	const dbUser = 'vagrant';
+	const dbPass = 'vagrant';
 
 }
