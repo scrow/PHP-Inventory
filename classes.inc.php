@@ -23,14 +23,8 @@ class Database {
 		}
 		return self::$_instance;
 	}
-	
-
 
 	public static $db = null;
-	
-/*	public function __construct() {
-		$this->dbConnect();	
-	} */
 	
 	protected function dbConnect() {
 		$this->db = new PDO( $this->getDsn(), Config::dbUser, Config::dbPass );
@@ -40,12 +34,42 @@ class Database {
 		unset($this->db);
 	}
 	
-/*	public function __destruct() {
-		unset($this->db);
-	} */
-	
 	public function getDsn() {
 		return ('mysql:dbname=' . trim(Config::dbName) . ';host=' . trim(Config::dbHost)); 
+	}
+	
+	public function export($tablename) {
+		// Exports a table to CSV
+		// Returns:  CSV formatted file
+		
+		// Get column names into $columnList[]
+		$columns = $this->db->query('SHOW COLUMNS IN '.$tablename)->fetchAll();
+		$columnList = array();
+		foreach($columns as $thiscol) {
+			$columnList[] = $thiscol[0];
+		};
+				
+		$headerLabels = array();
+		foreach($columnList as $thiscol) {
+			$headerLabels[] = '"'.addslashes($thiscol).'"';
+		};
+
+		$datafile = array();
+		$datafile[] = implode(',', $headerLabels);
+
+		// Get records into $records[]
+		$records = $this->db->query('SELECT * FROM '.$tablename)->fetchAll();
+		foreach($records as $thisrec) {
+			$line = array();
+			foreach($columnList as $thiscol) {
+				$line[] = '"'.addslashes($thisrec[$thiscol]).'"';
+			};
+			$datafile[] = implode(',', $line);
+		};
+
+		// Glue the file together
+		$output = implode("\n", $datafile);
+		return($output);
 	}
 }
 
