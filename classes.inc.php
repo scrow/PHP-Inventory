@@ -120,7 +120,12 @@ class Database {
 				$idx = 0;
 				foreach($headers as $thiskey) {
 					$prepare_array[$thiskey] = $tablename . '.' .$thiskey.'=:'.$thiskey;
-					$execute_array[$thiskey] = $thisline[$idx];
+					if($thisline[$idx]=="") {
+						// Properly handle a null value
+						$execute_array[$thiskey] = null;
+					} else {
+						$execute_array[$thiskey] = $thisline[$idx];					
+					};
 					$idx++;
 				};
 				$st = $this->db->prepare('UPDATE ' . $tablename . ' SET ' . implode(', ', $prepare_array). ' WHERE id=:id');
