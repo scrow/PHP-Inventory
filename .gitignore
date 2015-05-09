@@ -1,2 +1,6 @@
 config.inc.php
 .vagrant
+items.csv
+attachments.csv
+locations.csv
+groups.csv
