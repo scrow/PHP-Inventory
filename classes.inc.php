@@ -10,11 +10,27 @@ require_once('config.inc.php');
 require_once('globals.inc.php');
 
 class Database {
+
+	static private $_instance = NULL;
+	
+	private function __construct() {}
+	private function __clone() {}
+	
+	static function getInstance() {
+		if (self::$_instance == NULL) {
+			self::$_instance = new Database();
+			self::$_instance->dbConnect();
+		}
+		return self::$_instance;
+	}
+	
+
+
 	public static $db = null;
 	
-	public function __construct() {
+/*	public function __construct() {
 		$this->dbConnect();	
-	}
+	} */
 	
 	protected function dbConnect() {
 		$this->db = new PDO( $this->getDsn(), Config::dbUser, Config::dbPass );
@@ -24,14 +40,13 @@ class Database {
 		unset($this->db);
 	}
 	
-	public function __destruct() {
+/*	public function __destruct() {
 		unset($this->db);
-	}
+	} */
 	
 	public function getDsn() {
 		return ('mysql:dbname=' . trim(Config::dbName) . ';host=' . trim(Config::dbHost)); 
 	}
-
 }
 
 /* ********************************************************************************************************
@@ -57,9 +72,10 @@ class Inventory extends Database {
 	
 	public function __construct() {
 		// Load all items into $this->items[]
-		$this->dbConnect();
+		$connection = Database::getInstance();
+		
 		$this->items = array();
-		$st = $this->db->query('SELECT id FROM items ORDER BY shortName');
+		$st = $connection->db->query('SELECT id FROM items ORDER BY shortName');
 		while ($record = $st->fetch(PDO::FETCH_ASSOC)) {
 			$item = new Item($record['id']);
 			$this->items[$record['id']] = $item;
@@ -67,7 +83,7 @@ class Inventory extends Database {
 		
 		// Load all locations into $this->locations[]
 		$this->locations = array();
-		$st = $this->db->query('SELECT id FROM locations WHERE TRIM(shortName) IS NOT NULL ORDER BY shortName');
+		$st = $connection->db->query('SELECT id FROM locations WHERE TRIM(shortName) IS NOT NULL ORDER BY shortName');
 		while ($record = $st->fetch(PDO::FETCH_ASSOC)) {
 			$location = new Location($record['id']);
 			$this->locations[$record['id']] = $location;
@@ -75,13 +91,12 @@ class Inventory extends Database {
 		
 		// Load all groups into $this->groups[]
 		$this->groups = array();
-		$st = $this->db->query('SELECT id FROM groups WHERE TRIM(shortName) IS NOT NULL ORDER BY shortName');
+		$st = $connection->db->query('SELECT id FROM groups WHERE TRIM(shortName) IS NOT NULL ORDER BY shortName');
 		while ($record = $st->fetch(PDO::FETCH_ASSOC)) {
 			$group = new Group($record['id']);
 			$this->groups[$record['id']] = $group;
 		};
-		
-		$this->dbDisconnect();
+
 	}
 	
 	public function __destruct() {
@@ -162,7 +177,7 @@ class Inventory extends Database {
 
 		if(isset($this->attributes['id'])) { // prevents error during __destruct() if item is being deleted
 			if($this->modified) {
-				$this -> dbConnect();
+				$connection = Database::getInstance();
 		
 				$keynames = array_keys($this->attributes);
 				$prepare_array = array();
@@ -176,15 +191,13 @@ class Inventory extends Database {
 				};
 				
 				$execute_array['id'] = $this->attributes['id'];
-				$st = $this->db->prepare('UPDATE ' . $tablename . ' SET ' . implode(', ', $prepare_array). ' WHERE id=:id');
+				$st = $connection->db->prepare('UPDATE ' . $tablename . ' SET ' . implode(', ', $prepare_array). ' WHERE id=:id');
 				$st -> execute($execute_array);
 			
 				unset($keynames);
 				unset($prepare_array);
 				unset($execute_array);
 				unset($st);
-				
-				$this->dbDisconnect();
 				
 				$this->modified = false;
 			};
@@ -280,8 +293,8 @@ class Inventory extends Database {
 	public function matchLocation($shortName) {
 		// Performs a case-insensitive search for location by $shortName
 		// Returns the corresponding location, or false if none found
-		$this->dbConnect();
-		$st = $this->db->prepare('SELECT id FROM locations WHERE TRIM(LOWER(shortName))=?');
+		$connection = Database::getInstance();
+		$st = $connection->db->prepare('SELECT id FROM locations WHERE TRIM(LOWER(shortName))=?');
 		$st->execute(array(trim(strtolower($shortName))));
 		$record = $st->fetch(PDO::FETCH_ASSOC);
 		if($record) {
@@ -289,7 +302,6 @@ class Inventory extends Database {
 		} else {
 			return false;
 		};
-		$this->dbDisconnect();
 	}
 
 	public function newLocation($idnum) {
@@ -303,8 +315,8 @@ class Inventory extends Database {
 	public function matchGroup($shortName) {
 		// Performs a case-insensitive search for group by $shortName
 		// Returns the corresponding group, or false if none found
-		$this->dbConnect();
-		$st = $this->db->prepare('SELECT id FROM groups WHERE TRIM(LOWER(shortName))=?');
+		$connection = Database::getInstance();
+		$st = $connection->db->prepare('SELECT id FROM groups WHERE TRIM(LOWER(shortName))=?');
 		$st->execute(array(trim(strtolower($shortName))));
 		$record = $st->fetch(PDO::FETCH_ASSOC);
 		if($record) {
@@ -312,7 +324,6 @@ class Inventory extends Database {
 		} else {
 			return false;
 		};
-		$this->dbDisconnect();
 	}
 
 	public function newGroup($idnum) {
@@ -374,14 +385,14 @@ class Item extends Inventory {
 	}
 	
 	protected function buildItem($id, $tablename="items") {
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		if($id==null) {
 			// Create new record
-			$this->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
-			$this->attributes['id'] = $this->db->lastInsertId();
+			$connection->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
+			$this->attributes['id'] = $connection->db->lastInsertId();
 			
 			// Read it back in to initialize the attributes
-			$record = $this->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
+			$record = $connection->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
 
 			$this->attributes = $record;
 			$this->valid = true;
@@ -389,7 +400,7 @@ class Item extends Inventory {
 			$this->modified=true;
 		} else {
 			// Read existing record
-			$st = $this->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
+			$st = $connection->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
 			$st->execute(array($id));
 			$record = $st->fetch(PDO::FETCH_ASSOC);
 			
@@ -466,8 +477,8 @@ class Item extends Inventory {
 		foreach ($this->attachments as $attachment) {
 			$this->deleteAttachment($attachment->getAttribute('id'));
 		};
-		$this->dbConnect();
-		$st = $this->db->prepare('DELETE FROM items WHERE id=?');
+		$connection = Database::getInstance();
+		$st = $connection->db->prepare('DELETE FROM items WHERE id=?');
 		$st -> execute(array($this->attributes['id']));
 		$this->attributes = array();
 		return true;
@@ -486,12 +497,11 @@ class NullItem extends Item {
 
 	public function __construct() {
 		// Creates a simulated attributes() array with all values set to null
-		$this -> dbConnect();
-		$result = $this -> db -> query('SHOW FULL COLUMNS IN items');
+		$connection = Database::getInstance();
+		$result = $connection -> db -> query('SHOW FULL COLUMNS IN items');
 		while($thiskey = $result->fetch(PDO::FETCH_ASSOC)) {
 			$this->attributes[$thiskey['Field']] = null;
 		};
-		$this -> dbDisconnect();
 	}
 	
 	public function __destruct() {
@@ -525,29 +535,28 @@ class Group extends Inventory {
 	public function delete() {
 		// Deletes this ID from the database
 		// Note:  Inventory::deleteGroup() is probably what you're looking for...
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		
-		$st = $this->db->prepare('DELETE FROM groups WHERE id=?');
+		$st = $connection->db->prepare('DELETE FROM groups WHERE id=?');
 		$st->execute(array($this->getAttribute('id')));
 
-		$this->dbDisconnect();
 	}
 	
 	private function buildGroup($id, $tablename) {
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		if($id==null) {
 			// Create new record
-			$this->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
-			$this->attributes['id'] = $this->db->lastInsertId();
+			$connection->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
+			$this->attributes['id'] = $connection->db->lastInsertId();
 			
 			// Read it back in to initialize the attributes
-			$record = $this->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
+			$record = $connection->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
 
 			$this->attributes = $record;
 			$this->valid = true;
 		} else {
 			// Read existing record
-			$st = $this->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
+			$st = $connection->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
 			$st->execute(array($id));
 			$record = $st->fetch(PDO::FETCH_ASSOC);
 			
@@ -590,20 +599,20 @@ class Location extends Inventory {
 	}
 	
 	private function buildLocation($id, $tablename) {
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		if($id==null) {
 			// Create new record
-			$this->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
-			$this->attributes['id'] = $this->db->lastInsertId();
+			$connection->db->query('INSERT INTO ' . $tablename . ' () VALUES ()');
+			$this->attributes['id'] = $connection->db->lastInsertId();
 			
 			// Read it back in to initialize the attributes
-			$record = $this->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
+			$record = $connection->db->query('SELECT * FROM ' . $tablename . ' WHERE id=' . $this->attributes['id']) -> fetch(PDO::FETCH_ASSOC);
 
 			$this->attributes = $record;
 			$this->valid = true;
 		} else {
 			// Read existing record
-			$st = $this->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
+			$st = $connection->db->prepare('SELECT * FROM ' . $tablename . ' WHERE id=?');
 			$st->execute(array($id));
 			$record = $st->fetch(PDO::FETCH_ASSOC);
 			
@@ -616,7 +625,6 @@ class Location extends Inventory {
 			};
 		};
 
-		$this->dbDisconnect();
 		unset($record);		
 	}
 
@@ -628,18 +636,17 @@ class Location extends Inventory {
 	public function delete() {
 		// Deletes this ID from the database
 		// Note:  Inventory::deleteLocation() is probably what you're looking for...
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		
-		$st = $this->db->prepare('DELETE FROM locations WHERE id=?');
+		$st = $connection->db->prepare('DELETE FROM locations WHERE id=?');
 		$st->execute(array($this->getAttribute('id')));
 
-		$this->dbDisconnect();
 	}
 	
 	public function contains() {
 		// returns an array list of item id's which belong to the location $id
-		$this->dbConnect();
-		$st = $this->db->prepare('SELECT id FROM items WHERE location=?');
+		$connection = Database::getInstance();
+		$st = $connection->db->prepare('SELECT id FROM items WHERE location=?');
 		$st -> execute(array($this->id()));
 		$result = $st->fetch(PDO::FETCH_ASSOC);
 		return $result;
@@ -828,15 +835,14 @@ class Attachment extends Item {
 			return null;
 		} else {
 			$idlist = array();
-			$this->dbConnect();
-			$st = $this->db->prepare('SELECT id FROM attachments WHERE item=?');
+			$connection = Database::getInstance();
+			$st = $connection->db->prepare('SELECT id FROM attachments WHERE item=?');
 			$st->execute(array($id));
 			while ($record = $st->fetch(PDO::FETCH_ASSOC)) {
 				$idlist[] = $record['id'];
 			};
 			unset($st);
 			unset($record);
-			$this->dbDisconnect();
 			return($idlist);
 		}
 	}
@@ -844,9 +850,9 @@ class Attachment extends Item {
 	public function delete() {
 		// Deletes this ID from the database and the array, and removes source file and thumbnail if not in use by another record
 		// Note:  Item::deleteAttachment() is probably what you're looking for...
-		$this->dbConnect();
+		$connection = Database::getInstance();
 		
-		$st = $this->db->prepare('SELECT COUNT(id) FROM attachments WHERE sha1=?');
+		$st = $connection->db->prepare('SELECT COUNT(id) FROM attachments WHERE sha1=?');
 		$st -> execute(array($this->getAttribute('sha1')));
 		$records = $st->fetch(PDO::FETCH_NUM);
 		if($records[0] == 1) {
@@ -858,9 +864,8 @@ class Attachment extends Item {
 		
 		unset($records);
 		
-		$st = $this->db->prepare('DELETE FROM attachments WHERE id=?');
+		$st = $connection->db->prepare('DELETE FROM attachments WHERE id=?');
 		$st->execute(array($this->getAttribute('id')));
-		$this->dbDisconnect();
 	}
 	
 }

@@ -9,8 +9,10 @@ switch($_SERVER['REQUEST_METHOD']) {
 			die('One or more parameters missing.');
 		};
 		
-		$item = new Item($_GET['id']);
-		if(!$item->isValid()) {
+		$inv = new Inventory();
+		$item = $inv->getItem($_GET['id']);
+
+		if($item==false) {
 			die('Invalid item id');
 		};
 		
