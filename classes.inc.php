@@ -71,6 +71,63 @@ class Database {
 		$output = implode("\n", $datafile);
 		return($output);
 	}
+	
+	public function import($tablename, $source) {
+		// Imports a table from CSV
+		// Accepts:  Table name as $tablename, CSV file contents as $source
+		// Returns:  true if successful, false if an error occurred
+		
+		// Split the data file into an array
+		$datafile = explode("\n", $source);
+		
+		// Make sure we have at least two lines; if not, abort and return false
+		if(sizeof($datafile) < 2) {
+			return false;
+		};
+		
+		// Quick callback function
+		function cleanupHeaders(&$input) {
+			$input = trim(stripslashes($input),'"');
+		};
+
+		// Extract and clean up the header row
+		$headers = explode(',', $datafile[0]);
+		array_walk($headers, 'cleanupHeaders');
+		array_shift($datafile);
+		
+		// Verify each column header exists in the destination table
+		$columns = $this->db->query('SHOW COLUMNS IN '.$tablename)->fetchAll();
+		$columnList = array();
+		foreach($columns as $thiscol) {
+			$columnList[] = $thiscol[0];
+		};
+		if(sizeof(array_intersect($headers, $columnList)) !== sizeof($headers)) {
+			// One or more headers not found; abort and return false
+			return false;
+		};
+
+		// Walk through the file and do the import
+		foreach($datafile as $line) {
+			// Logic on the next line avoids warning conditions on blank lines (near EOF, etc)
+			if(sizeof(explode("\n",$line)) > 1) {
+				$prepare_array = array();
+				$execute_array = array();
+				
+				$thisline = explode(',', $line);
+				array_walk($thisline, 'cleanupheaders');
+				print_r($thisline);
+				
+				$idx = 0;
+				foreach($headers as $thiskey) {
+					$prepare_array[$thiskey] = $tablename . '.' .$thiskey.'=:'.$thiskey;
+					$execute_array[$thiskey] = $thisline[$idx];
+					$idx++;
+				};
+				$st = $this->db->prepare('UPDATE ' . $tablename . ' SET ' . implode(', ', $prepare_array). ' WHERE id=:id');
+				$st -> execute($execute_array);
+			};
+		};
+	}
 }
 
 /* ********************************************************************************************************
