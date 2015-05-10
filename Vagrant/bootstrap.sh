@@ -34,14 +34,15 @@ then
 	echo "CREATE USER 'vagrant'@'localhost' IDENTIFIED BY 'vagrant'" | mysql -uroot -pf0a8266bb2930e6b
 	echo "CREATE DATABASE inventory" | mysql -uroot -pf0a8266bb2930e6b
 	echo "GRANT ALL ON inventory.* TO 'vagrant'@'localhost'" | mysql -uroot -pf0a8266bb2930e6b
-	echo "INSERT INTO inventory.locations (shortName) VALUES ('Default')" | mysql -uroot -pf0a8266bb2930e6b
-	echo "INSERT INTO inventory.groups (shortName) VALUES ('Default')" | mysql -uroot -pf0a8266bb2930e6b
 	echo "flush privileges" | mysql -uroot -pf0a8266bb2930e6b
 
-	touch /var/log/dbsetup
-	
 	if [ -f /vagrant/tables.sql ];
 	then
 		mysql -uroot -pf0a8266bb2930e6b inventory < /vagrant/tables.sql
+		# Insert default location and group into the databases
+		echo "INSERT INTO locations (shortName) VALUES (\"Default\");" | mysql -uroot -pf0a8266bb2930e6b inventory
+		echo "INSERT INTO groups (shortName) VALUES (\"Default\");" | mysql -uroot -pf0a8266bb2930e6b inventory
 	fi
+
+	touch /var/log/dbsetup
 fi
