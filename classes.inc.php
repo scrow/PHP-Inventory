@@ -843,34 +843,60 @@ class Attachment extends Item {
 			return false;
 		};
 		
-		if (($this->isPdf()) && (!file_exists($this->getThumbname()))) {
-			// Make a thumbnail of the PDF if one does not already exist
-			$imagick = new Imagick();
-			$imagick->readImage($this->getFilename().'[0]');
-			$imagick = $imagick->flattenImages();
-			$imagick->writeImage($this->getThumbname()); // Temporarily write to disk so we can retrieve the dimensions
-			unset($imagick);
-			
-			$imagick = new Imagick();
-			$imagick->readImage($this->getThumbname());
-			$this->setAttribute('imgWidth', $imagick->getImageWidth());
-			$this->setAttribute('imgHeight', $imagick->getImageHeight());
-			$imagick->scaleImage(256,256,false);
-			$imagick->writeImage($this->getThumbname());
-			$this->setAttribute('hasThumb', true);
-			unset ($imagick);
-			return true;
+		if ($this->isPdf()) {
+			if (file_exists($this->getThumbname())) {
+				// Use the existing thumbnail image
+				$this->setAttribute('hasThumb', true);
+
+				$imagick = new Imagick();
+				$imagick->readImage($this->getThumbname());
+				$this->setAttribute('imgWidth', $imagick->getImageWidth());
+				$this->setAttribute('imgHeight', $imagick->getImageHeight());
+				unset ($imagick);
+
+				return true;
+			} else {
+				// Make a thumbnail of the PDF if one does not already exist
+				$imagick = new Imagick();
+				$imagick->readImage($this->getFilename().'[0]');
+				$imagick = $imagick->flattenImages();
+				$imagick->writeImage($this->getThumbname()); // Temporarily write to disk so we can retrieve the dimensions
+				unset($imagick);
+				
+				$imagick = new Imagick();
+				$imagick->readImage($this->getThumbname());
+				$this->setAttribute('imgWidth', $imagick->getImageWidth());
+				$this->setAttribute('imgHeight', $imagick->getImageHeight());
+				$imagick->scaleImage(256,256,false);
+				$imagick->writeImage($this->getThumbname());
+				$this->setAttribute('hasThumb', true);
+				unset ($imagick);
+				return true;
+			};
 		};
 
-		if (($this->getAttribute('isImg')) && (!file_exists($this->getThumbname()))) {
-			// Make a thumbnail of the image if one does not already exist
-			$imagick = new Imagick();
-			$imagick->readImage($this->getFilename());
-			$imagick->scaleImage(256,256,false);
-			$imagick->writeImage($this->getThumbname());
-			$this->setAttribute('hasThumb', true);
-			unset ($imagick);
-			return true;				
+		if ($this->getAttribute('isImg')) {
+			if (file_exists($this->getThumbname())) {
+				// Use the existing thumbnail image
+				$this->setAttribute('hasThumb', true);
+
+				$imagick = new Imagick();
+				$imagick->readImage($this->getThumbname());
+				$this->setAttribute('imgWidth', $imagick->getImageWidth());
+				$this->setAttribute('imgHeight', $imagick->getImageHeight());
+				unset ($imagick);
+
+				return true;
+			} else {
+				// Make a new thumbnail of the image if one does not already exist
+				$imagick = new Imagick();
+				$imagick->readImage($this->getFilename());
+				$imagick->scaleImage(256,256,false);
+				$imagick->writeImage($this->getThumbname());
+				$this->setAttribute('hasThumb', true);
+				unset ($imagick);
+				return true;
+			};
 		};
 		
 		return false;
