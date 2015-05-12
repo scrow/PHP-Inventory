@@ -56,10 +56,6 @@ Below is a quick unordered list of current known limitations of PHP-Inventory.  
  * No restore functionality.  Currently there is a provision for creating a backup of the database, but not for restoring from that backup.  This will be resolved in a future (next?) version.
  
  * Limited reporting capability.  Filtering and report generation (Excel, CSV, etc) may be implemented in the future.
- 
- * Primitive thumbnailing.  Some thumbnails will be generated with skewn aspect ratios or may appear empty/all white.  This can probably be resolved with some tweaking to the Imagick calls.
- 
- * Backup files are not deleted.  The current implementation of the backup process is very primitive and currently leaves the `inv-*.zip` files in the `backups/` folder.  This will be resolved in the future.
 
 ## Issues and Feature Requests ##
 
