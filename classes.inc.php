@@ -855,7 +855,7 @@ class Attachment extends Item {
 			$imagick->readImage($this->getThumbname());
 			$this->setAttribute('imgWidth', $imagick->getImageWidth());
 			$this->setAttribute('imgHeight', $imagick->getImageHeight());
-			$imagick->scaleImage(128,128,false);
+			$imagick->scaleImage(256,256,false);
 			$imagick->writeImage($this->getThumbname());
 			$this->setAttribute('hasThumb', true);
 			unset ($imagick);
@@ -866,7 +866,7 @@ class Attachment extends Item {
 			// Make a thumbnail of the image if one does not already exist
 			$imagick = new Imagick();
 			$imagick->readImage($this->getFilename());
-			$imagick->scaleImage(128,128,false);
+			$imagick->scaleImage(256,256,false);
 			$imagick->writeImage($this->getThumbname());
 			$this->setAttribute('hasThumb', true);
 			unset ($imagick);
