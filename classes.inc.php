@@ -272,7 +272,12 @@ class Inventory extends Database {
 				foreach($keynames as $thiskey) {
 					if(($thiskey !== 'id') && ((($onlykey!=null) && ($thiskey==$onlykey)) || ($onlykey==null))) {
 						$prepare_array[$thiskey] = $tablename . '.' .$thiskey.'=:'.$thiskey;
-						$execute_array[$thiskey] = $this->attributes[$thiskey];
+						// Update to provide proper handling of null values (we want to insert a NULL, not a "")
+						if(trim($this->attributes[$thiskey]=='')) {
+							$execute_array[$thiskey] = null;
+						} else {
+							$execute_array[$thiskey] = trim($this->attributes[$thiskey]);							
+						}
 					};
 				};
 				
