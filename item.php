@@ -346,19 +346,19 @@ $output = <<<EOD
 <FORM METHOD="POST" ENCTYPE="multipart/form-data" ACTION="item.php" ID="itemForm">
 	<INPUT TYPE="hidden" NAME="id" ID="id" VALUE="{$id}"/>
 
-	<LABEL FOR="shortName">Short Name:</LABEL>
+	<LABEL FOR="shortName">Short Name (or Title):</LABEL>
 	<INPUT TYPE="TEXT" NAME="shortName" ID="shortName" MAXLENGTH=64 VALUE="{$attributes['shortName']}"/>
 	
-	<LABEL FOR="make">Make:</LABEL>
+	<LABEL FOR="make">Make (or Author):</LABEL>
 	<INPUT TYPE="TEXT" NAME="make" ID="make" MAXLENGTH=32 VALUE="{$attributes['make']}"/>
 	
-	<LABEL FOR="model">Model:</LABEL>
+	<LABEL FOR="model">Model (or Edition):</LABEL>
 	<INPUT TYPE="TEXT" NAME="model" ID="model" VALUE="{$attributes['model']}"/>
 	
 	<LABEL FOR="serial">Serial:</LABEL>
 	<INPUT TYPE="TEXT" NAME="serial" ID="serial" VALUE="{$attributes['serial']}"/>
 
-	<LABEL FOR="upc">UPC:</LABEL>
+	<LABEL FOR="upc">UPC (or ISBN):</LABEL>
 	<INPUT TYPE="TEXT" NAME="upc" ID="upc" VALUE="{$attributes['upc']}"/>
 
 	<LABEL FOR="purchaseDate">Purchase Date:</LABEL>
