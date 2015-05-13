@@ -331,9 +331,14 @@ EOT;
 			};
 
 			
+			if($item->getAttribute('shortName')=='') {
+				$itemLabel = '(untitled item)';
+			} else {
+				$itemLabel = $item->getAttribute('shortName');
+			};
 			
 			$output = <<<EOT
-<TR><TD><INPUT TYPE="CHECKBOX" NAME="id[{$item->getAttribute('id')}]" ID="id[{$item->getAttribute('id')}]"/></TD><TD><A HREF="item.php?id={$item->getAttribute('id')}" TARGET="_blank">* {$item->getAttribute('shortName')}</A>$extendedInfo</TD>
+<TR><TD><INPUT TYPE="CHECKBOX" NAME="id[{$item->getAttribute('id')}]" ID="id[{$item->getAttribute('id')}]"/></TD><TD><A HREF="item.php?id={$item->getAttribute('id')}">{$itemLabel}</A>$extendedInfo</TD>
 <TD>$thirdColTD</TD><TD>{$itemImg}{$receiptImg}</TD><TD>$currentValue</TD></TR>
 EOT;
 			echo($output);
