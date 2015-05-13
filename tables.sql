@@ -65,7 +65,7 @@ CREATE TABLE `items` (
   `make` varchar(32) DEFAULT NULL,
   `model` varchar(32) DEFAULT NULL,
   `serial` varchar(32) DEFAULT NULL,
-  `upc` varchar(12) DEFAULT NULL,
+  `upc` varchar(13) DEFAULT NULL,
   `purchaseDate` date DEFAULT NULL,
   `purchasePrice` float DEFAULT NULL,
   `warrantyExp` date DEFAULT NULL,
