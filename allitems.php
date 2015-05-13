@@ -278,7 +278,7 @@ foreach($display as $collection) {
 		
 		$output = <<<EOT
 <TR><TH COLSPAN=5>&nbsp;<BR/>{$collection['name']}<BR/>&nbsp;</TH></TR>
-<TR><TH>Select</TH><TH>Name</TH><TH>{$thirdCol}</TH><TH>Key Files</TH><TH>Value</TH></TR>
+<TR><TH>Select</TH><TH>Name (Model, Serial)</TH><TH>{$thirdCol}</TH><TH>Key Files</TH><TH>Value</TH></TR>
 EOT;
 		echo($output);
 	
@@ -316,8 +316,24 @@ EOT;
 				$receiptImg = 'Receipt';
 			};
 			
+			$extendedInfo = array();
+			// Enable the block below to show model numbers along with the serial number
+/*			if($item->getAttribute('model')!==null) {
+				$extendedInfo[] = $item->getAttribute('model');
+			}; */
+			if($item->getAttribute('serial')!==null) {
+				$extendedInfo[] = '#'.$item->getAttribute('serial');
+			};
+			if(sizeof($extendedInfo) > 0) {
+				$extendedInfo = ' ('.implode(' ', $extendedInfo).')';
+			} else {
+				$extendedInfo = '';
+			};
+
+			
+			
 			$output = <<<EOT
-<TR><TD><INPUT TYPE="CHECKBOX" NAME="id[{$item->getAttribute('id')}]" ID="id[{$item->getAttribute('id')}]"/></TD><TD><A HREF="item.php?id={$item->getAttribute('id')}" TARGET="_blank">* {$item->getAttribute('shortName')}</A></TD>
+<TR><TD><INPUT TYPE="CHECKBOX" NAME="id[{$item->getAttribute('id')}]" ID="id[{$item->getAttribute('id')}]"/></TD><TD><A HREF="item.php?id={$item->getAttribute('id')}" TARGET="_blank">* {$item->getAttribute('shortName')}</A>$extendedInfo</TD>
 <TD>$thirdColTD</TD><TD>{$itemImg}{$receiptImg}</TD><TD>$currentValue</TD></TR>
 EOT;
 			echo($output);
