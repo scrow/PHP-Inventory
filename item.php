@@ -10,6 +10,7 @@ require_once('globals.inc.php');
 		<TITLE>Personal Inventory:  Add/Edit Item</TITLE>
 		<LINK REL="stylesheet" HREF="styles.css"/>
 		<SCRIPT SRC="dropdowns.js"> </SCRIPT>
+		<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
 	</HEAD>
 	<BODY>
 		<H1>View/Edit Item</H1>
@@ -358,7 +359,7 @@ $output = <<<EOD
 	<LABEL FOR="serial">Serial:</LABEL>
 	<INPUT TYPE="TEXT" NAME="serial" ID="serial" VALUE="{$attributes['serial']}"/>
 
-	<LABEL FOR="upc">UPC (or ISBN):</LABEL>
+	<LABEL FOR="upc">UPC (or ISBN): [<A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="upc" ID="upc" VALUE="{$attributes['upc']}"/>
 
 	<LABEL FOR="purchaseDate">Purchase Date:</LABEL>
@@ -376,13 +377,13 @@ $output = <<<EOD
 	<LABEL FOR="replacementValue">Current Replacement Value:</LABEL>
 	<INPUT TYPE="TEXT" NAME="replacementValue" ID="replacementValue" VALUE="{$replacementValue}"/>
 
-	<LABEL FOR="valueDate">Values as of Date:</LABEL>
+	<LABEL FOR="valueDate">Values as of Date: [<A HREF="javascript:getDate('valueDate')">Today</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="valueDate" ID="valueDate" VALUE="{$valueDate}"/>
 
-	<LABEL FOR="url">URL:</LABEL>
+	<LABEL FOR="url">URL: [<A HREF="javascript:viewURL('url')">View</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="url" ID="url" VALUE="{$attributes['url']}"/>
 
-	<LABEL FOR="amazonASIN">Amazon ASIN:</LABEL>
+	<LABEL FOR="amazonASIN">Amazon ASIN: [<A HREF="javascript:viewASIN('amazonASIN')">View</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="amazonASIN" ID="amazonASIN" VALUE="{$attributes['amazonASIN']}"/>
 
 	<LABEL FOR="location">Location:</LABEL>
