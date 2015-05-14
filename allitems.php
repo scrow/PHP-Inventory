@@ -1,5 +1,15 @@
 <?php
-	
+
+/**
+  * Supported parameters:
+  * 
+  * title .............. sets the page title
+  * sort ............... "group" or "location"
+  * only ............... group or location ID to display
+  * pagebreaks ......... 1 or 0 to toggle page breaks between sections when printing
+  *
+  **/ 
+
 require_once('classes.inc.php');
 require_once('globals.inc.php');
 
@@ -7,13 +17,11 @@ require_once('globals.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  All Items</TITLE>
+		<TITLE>Personal Inventory:  Item Listing</TITLE>
 		<LINK REL="stylesheet" HREF="styles.css"/>
 		<SCRIPT SRC="dropdowns.js"></SCRIPT>
 	</HEAD>
 	<BODY>
-		<H1>All Items</H1>
-
 <?php
 
 function mkPrettyDollars($str) {
@@ -65,6 +73,26 @@ function groupSort($inv, $only = false) {
 
 switch($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
+		// Handle page breaks in section headers
+		if((isset($_GET['pagebreaks'])) && ($_GET['pagebreaks']==1)) {
+			$pagebreaks = 'STYLE="page-break-before: always"';
+			$pagebreakInput = '<INPUT TYPE="HIDDEN" NAME="pagebreaks" ID="pagebreaks" VALUE="1"/>';
+		} else {
+			$pagebreaks = '';
+			$pagebreakInput = '';
+		};
+		
+		// Set dynamic page title
+		if(isset($_GET['title'])) {
+			$title = '<H1>'.htmlentities(html_entity_decode(trim($_GET['title']))).'</H1>';
+			$titleInput = '<INPUT TYPE="HIDDEN" NAME="title" ID="title" VALUE="'.htmlentities($_GET['title']).'"/>';
+		} else {
+			$title = '<H1>Inventory Listing</H1>';
+			$titleInput = '';
+		};
+
+		echo($title);
+
 		if(isset($_GET['only'])) {
 			$only = $_GET['only'];
 			$insert = '<INPUT TYPE="HIDDEN" NAME="only" VALUE="'.$only.'">';
@@ -97,9 +125,32 @@ switch($_SERVER['REQUEST_METHOD']) {
 			$insert = $insert.'<INPUT TYPE="HIDDEN" NAME="sort" VALUE="location"/>';
 		};
 		
+		$insert = $insert . $pagebreakInput . $titleInput;
+		
 		break;
 	case 'POST':
 		// Handle form submissions
+
+		// Handle page breaks in section headers
+		if((isset($_POST['pagebreaks'])) && ($_POST['pagebreaks']==1)) {
+			$pagebreaks = 'STYLE="page-break-before: always"';
+			$pagebreakInput = '<INPUT TYPE="HIDDEN" NAME="pagebreaks" ID="pagebreaks" VALUE="1"/>';
+		} else {
+			$pagebreaks = '';
+			$pagebreakInput = '';
+		};
+
+		// Set dynamic page title
+		if(isset($_POST['title'])) {
+			$title = '<H1>'.htmlentities(html_entity_decode(trim($_POST['title']))).'</H1>';
+			$titleInput = '<INPUT TYPE="HIDDEN" NAME="title" ID="title" VALUE="'.htmlentities($_POST['title']).'"/>';
+		} else {
+			$title = '<H1>Inventory Listing</H1>';
+			$titleInput = '';
+		};
+
+		echo($title);
+
 		if(!isset($_POST['id'])) {
 			// Not a valid form submission;  show an error
 			echo('<P>No items selected.</P>');
@@ -150,6 +201,7 @@ switch($_SERVER['REQUEST_METHOD']) {
 					break;
 				case 'delete':
 					$output = <<<EOT
+$title
 <P>Really delete these items?
 EOT;
 					foreach(array_keys($_POST['id']) as $id) {
@@ -232,6 +284,8 @@ EOT;
 			$thirdCol = 'Group';
 			$insert = $insert.'<INPUT TYPE="HIDDEN" NAME="sort" VALUE="location"/>';
 		};
+		
+		$insert = $insert . $pagebreakInput . $titleInput;
 
 		break;
 	default:
@@ -277,7 +331,7 @@ foreach($display as $collection) {
 		$subtotal = 0;
 		
 		$output = <<<EOT
-<TR><TH COLSPAN=5>&nbsp;<BR/>{$collection['name']}<BR/>&nbsp;</TH></TR>
+<TR $pagebreaks><TH COLSPAN=5>&nbsp;<BR/>{$collection['name']}<BR/>&nbsp;</TH></TR>
 <TR><TH>Select</TH><TH>Name (Model, Serial)</TH><TH>{$thirdCol}</TH><TH>Key Files</TH><TH>Value</TH></TR>
 EOT;
 		echo($output);
