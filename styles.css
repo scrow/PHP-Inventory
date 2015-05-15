@@ -1,6 +1,6 @@
 form {
 	position: relative;
-	width: 550px
+	width: 750px
 }
 
 input[type=text], input[type=file], select, input[type=button] {
@@ -8,6 +8,11 @@ input[type=text], input[type=file], select, input[type=button] {
 	display: block;
 	font-family: Courier New;
 	font-size: 10pt
+}
+
+input[type=submit].shortButton, input[type=button].shortButton {
+	width: 150px;
+	display: inline
 }
 
 input[type=text], select, textarea, div.formControlBlock {
