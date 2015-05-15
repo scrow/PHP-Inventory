@@ -52,7 +52,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		
 		// Massage the data while loading it into an array
 		
-		
 		$attributes = array(
 			'shortName' => maxlen($_POST['shortName'],64),
 			'make' => maxlen($_POST['make'],32),
@@ -155,6 +154,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		};
 		
 		// Take care of the group
+
 		if((isset($_POST['group'])) && (trim($_POST['group'])!=='')) {
 			$grp = $inv->matchGroup($_POST['group']);
 			if(!$grp) {
@@ -167,6 +167,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			};
 		} else {
 			// assign to default group
+			
 			$item->setAttribute('group', $inv->matchGroup('* Default'));
 		};
 				
@@ -177,12 +178,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			// User clicked Delete button; show a confirmation
 			$hiddenFields = '';
 			foreach(array_keys($attributes) as $thiskey) {
-				if(($thiskey!=='attachments') && ($thiskey!=='location')) {
+				if(($thiskey!=='group') && ($thiskey!=='location')) {
 					$hiddenFields = $hiddenFields . <<<EOT
 <INPUT TYPE="HIDDEN" NAME="{$thiskey}" ID="{$thiskey}" VALUE="{$attributes[$thiskey]}"/>
 EOT;
 				};
-			}
+			};
+			$hiddenFields = $hiddenFields . '<INPUT TYPE="HIDDEN" NAME="group" ID="group" VALUE="'.$inv->getGroup($attributes['group'])->getAttribute('shortName').'"/>';
+			$hiddenFields = $hiddenFields . '<INPUT TYPE="HIDDEN" NAME="location" ID="location" VALUE="'.$inv->getLocation($attributes['location'])->getAttribute('shortName').'"/>';
 			$output = <<<EOT
 <FORM METHOD="POST" ACTION="item.php">
 <P>Delete this item?<BR/>
