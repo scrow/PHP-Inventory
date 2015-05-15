@@ -39,9 +39,6 @@ then
 	if [ -f /vagrant/tables.sql ];
 	then
 		mysql -uroot -pf0a8266bb2930e6b inventory < /vagrant/tables.sql
-		# Insert default location and group into the databases
-		echo "INSERT INTO locations (shortName) VALUES (\"Default\");" | mysql -uroot -pf0a8266bb2930e6b inventory
-		echo "INSERT INTO groups (shortName) VALUES (\"Default\");" | mysql -uroot -pf0a8266bb2930e6b inventory
 	fi
 
 	touch /var/log/dbsetup

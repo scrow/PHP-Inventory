@@ -36,15 +36,6 @@ PHP-Inventory requires PHP 5 or newer with PDO MySQL support enabled, and a MySQ
 	cp config.inc.php.SAMPLE config.inc.php
 	mysql -uUSER -pPASSWORD << tables.sql
 
-As of the current version, you must manually create the default location and group in the database:
-
-	mysql -uUSER -pPASSWORD inventory
-	
-and then:
-
-	INSERT INTO inventory.locations (shortName) VALUES (' * Default');
-	INSERT INTO inventory.groups (shortName) VALUES (' * Default');
-	
 Optionally (and recommended for public servers) password protect the inventory service by creating an `.htpasswd` file.
 
 ## Current Limitations ##
