@@ -3,16 +3,20 @@ form {
 	width: 750px
 }
 
+input[type=submit], input[type=reset] {
+	font-size: 10pt
+}
+
 input[type=text], input[type=file], select, input[type=button] {
 	width: 375px;
 	display: block;
-	font-family: Courier New;
 	font-size: 10pt
 }
 
 input[type=submit].shortButton, input[type=button].shortButton {
 	width: 150px;
-	display: inline
+	display: inline;
+	font-size: 10pt
 }
 
 input[type=text], select, textarea, div.formControlBlock {
@@ -31,10 +35,6 @@ a:hover {
 select.comboDropdown {
 	display: inline;
 	margin-bottom: 3px
-}
-
-input[type=submit], input[type=reset] {
-	font-size: 12pt
 }
 
 div.comboLabel {
@@ -76,4 +76,3 @@ p {
 td,th {
 	text-align: center
 }
-f
