@@ -5,3 +5,5 @@ attachments.csv
 locations.csv
 groups.csv
 .DS_Store
+.htpasswd
+.htaccess
