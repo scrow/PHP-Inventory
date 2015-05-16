@@ -21,7 +21,7 @@ then
 	chown -R vagrant.vagrant /var/lock/apache2
 	sudo sed -i "s|\("^export\ APACHE_RUN_USER=" * *\).*|\1vagrant|" /etc/apache2/envvars
 	sudo sed -i "s|\("^export\ APACHE_RUN_GROUP=" * *\).*|\1vagrant|" /etc/apache2/envvars
-	
+	sudo sed -i "s|\("AllowOverride\ " * *\).*|\1all|" /etc/apache2/sites-enabled/000-default	
 	sudo service apache2 stop
 	sudo service apache2 start
 	touch /var/log/swsetup
