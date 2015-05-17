@@ -129,6 +129,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 						$inv->deleteItem($item->getAttribute('id'));
 					};
 
+					// Close out the current Inventory instance
+					unset($inv);
+					
 					// do the database restore
 					// Important:  Restoration of locations, groups, and attachments must be completed
 					//   before restoring the items.
@@ -142,7 +145,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					unlink($tempfolder.'/items.csv');
 
 					// Re-read the database
-					unset($inv);
 					$inv = new Inventory();
 
 					// restore attachments
