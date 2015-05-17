@@ -38,100 +38,94 @@ class Database {
 		return ('mysql:dbname=' . trim(Config::dbName) . ';host=' . trim(Config::dbHost)); 
 	}
 	
-	public function export($tablename) {
+	public function export($tablename, $filename) {
 		// Exports a table to CSV
+		// Accepts:  table name, output file name
 		// Returns:  CSV formatted file
 		
+		$fp = fopen($filename,'w');
+
 		// Get column names into $columnList[]
-		$columns = $this->db->query('SHOW COLUMNS IN '.$tablename)->fetchAll();
+		$columns = $this->db->query('SHOW COLUMNS IN `'.$tablename.'`')->fetchAll();
 		$columnList = array();
 		foreach($columns as $thiscol) {
 			$columnList[] = $thiscol[0];
 		};
-				
-		$headerLabels = array();
-		foreach($columnList as $thiscol) {
-			$headerLabels[] = '"'.addslashes($thiscol).'"';
-		};
-
-		$datafile = array();
-		$datafile[] = implode(',', $headerLabels);
+		fputcsv($fp, $columnList);
 
 		// Get records into $records[]
-		$records = $this->db->query('SELECT * FROM '.$tablename)->fetchAll();
+		$records = $this->db->query('SELECT * FROM `'.$tablename.'`')->fetchAll();
 		foreach($records as $thisrec) {
 			$line = array();
 			foreach($columnList as $thiscol) {
-				$line[] = '"'.addslashes($thisrec[$thiscol]).'"';
+				$line[] = $thisrec[$thiscol];
 			};
-			$datafile[] = implode(',', $line);
+			fputcsv($fp, $line);
 		};
 
-		// Glue the file together
-		$output = implode("\n", $datafile);
-		return($output);
+		fclose($fp);
 	}
-	
+
 	public function import($tablename, $source) {
 		// Imports a table from CSV
 		// Accepts:  Table name as $tablename, CSV file contents as $source
 		// Returns:  true if successful, false if an error occurred
 		
-		// Split the data file into an array
-		$datafile = explode("\n", $source);
-		
-		// Make sure we have at least two lines; if not, abort and return false
-		if(sizeof($datafile) < 2) {
-			return false;
-		};
-		
-		// Quick callback function
-		function cleanupHeaders(&$input) {
-			$input = trim(stripslashes($input),'"');
+		if(!function_exists('cleanupHeaders')) {
+			function cleanupHeaders(&$input) {
+				// Quick callback function used by Inventory::import()
+				$input = trim(stripslashes($input),'"');
+			};			
 		};
 
-		// Extract and clean up the header row
-		$headers = explode(',', $datafile[0]);
-		array_walk($headers, 'cleanupHeaders');
-		array_shift($datafile);
+		$fp = fopen($source,'r');
+
+		$headers = fgetcsv($fp);
 		
 		// Verify each column header exists in the destination table
-		$columns = $this->db->query('SHOW COLUMNS IN '.$tablename)->fetchAll();
+		$columns = $this->db->query('SHOW COLUMNS IN `'.$tablename.'`')->fetchAll();
 		$columnList = array();
 		foreach($columns as $thiscol) {
 			$columnList[] = $thiscol[0];
 		};
+		
+		// Wipe out the existing table and reset the primary key
+		$this->db->query('TRUNCATE TABLE `'.$tablename.'`');
+		
 		if(sizeof(array_intersect($headers, $columnList)) !== sizeof($headers)) {
 			// One or more headers not found; abort and return false
 			return false;
 		};
 
 		// Walk through the file and do the import
-		foreach($datafile as $line) {
+		while($line = fgetcsv($fp)) {
 			// Logic on the next line avoids warning conditions on blank lines (near EOF, etc)
-			if(sizeof(explode("\n",$line)) > 1) {
+			if(sizeof($line) >0) {
 				$prepare_array = array();
 				$execute_array = array();
-				
-				$thisline = explode(',', $line);
-				array_walk($thisline, 'cleanupheaders');
-				print_r($thisline);
 				
 				$idx = 0;
 				foreach($headers as $thiskey) {
 					$prepare_array[$thiskey] = $tablename . '.' .$thiskey.'=:'.$thiskey;
-					if($thisline[$idx]=="") {
-						// Properly handle a null value
+					// For proper handling of null values
+					if($line[$idx]=='') {
 						$execute_array[$thiskey] = null;
 					} else {
-						$execute_array[$thiskey] = $thisline[$idx];					
+						$execute_array[$thiskey] = $line[$idx];					
 					};
 					$idx++;
 				};
-				$st = $this->db->prepare('UPDATE ' . $tablename . ' SET ' . implode(', ', $prepare_array). ' WHERE id=:id');
+				
+// Preserved for posterity
+//				$st = $this->db->prepare('INSERT INTO `'.$tablename.'` (`' .implode('`, `', array_keys($execute_array)). '`) VALUES (:'.implode(', :',array_keys($execute_array)).') ON DUPLICATE KEY UPDATE '.implode(', ', $prepare_array).' WHERE id=:id');
+
+				$st = $this->db->prepare('INSERT INTO `'.$tablename.'` (`' .implode('`, `', array_keys($execute_array)). '`) VALUES (:'.implode(', :',array_keys($execute_array)).')');
+
 				$st -> execute($execute_array);
+
 			};
 		};
+		fclose($fp);
 	}
 }
 

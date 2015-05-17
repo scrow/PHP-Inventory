@@ -20,10 +20,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		if(isset($_POST['action']) && ($_POST['action']=='Create Backup')) {
 			$db = Database::getInstance();
 
-			file_put_contents('items.csv', $db->export('items'));
-			file_put_contents('attachments.csv', $db->export('attachments'));
-			file_put_contents('locations.csv', $db->export('locations'));
-			file_put_contents('groups.csv', $db->export('groups'));
+			$db->export('items','items.csv');
+			$db->export('attachments','attachments.csv');
+			$db->export('locations','locations.csv');
+			$db->export('groups','groups.csv');
 			
 			$zipname = 'inv-'.date('Ymd-His').'.zip';
 			
@@ -71,12 +71,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					echo('<P>Restore from backup file '.trim($filename[0]).'?');
 					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
 					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="restoreConfirm" VALUE="Confirm"/>');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Cancel"/>');
+					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="restoreConfirm" VALUE="Cancel"/>');
+					echo('<INPUT TYPE="HIDDEN" NAME="filename" VALUE="'.trim($filename[0]).'"/>');
 					echo('</FORM>');
 					return true;
 				} else {
 					echo('<P>No file selected.</P>');
 				};
+			} else {
+				echo('<P>No file selected.</P>');
 			};
 		};
 		
@@ -94,6 +97,47 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				die('<P>An error occurred.</P>');
 			};
 		};
+		
+		if(isset($_POST['restoreConfirm']) && ($_POST['restoreConfirm']=='Confirm')) {
+			$db = Database::getInstance();
+			if(isset($_POST['filename'])) {
+				// Strip out any forward slashes for security
+				$filename = preg_replace('#/+#', '', $_POST['filename']);
+				// Strip out any backticks or single quotes for security
+				$filename = preg_replace('`/+`', '', $filename);
+				$filename = 'backups/'.preg_replace("'/+'", '', $filename);
+				if(!file_exists($filename)) {
+					echo('<P>File '.$filename.' not found.</P>');
+				} else {
+					// Set up a temp folder
+					if(!file_exists('tmp')) mkdir('tmp');
+					$tempfolder = 'tmp/' . trim(time());
+
+					// do the unzip
+					shell_exec('unzip -d '.$tempfolder.' '.$filename);
+
+					// do the database restore
+					echo('doing restore....');
+					$db->import('items',$tempfolder.'/items.csv');
+					$db->import('locations',$tempfolder.'/locations.csv');
+					$db->import('groups',$tempfolder.'/groups.csv');
+					$db->import('attachments',$tempfolder.'/attachments.csv');
+
+					// restore images
+					//   delete existing attachments, preserve .gitignore
+					//   delete existing thumbnails, preserve .gitignore
+					//   move attachments
+					//   move thumbnails
+					
+					// clean up
+
+				};
+			} else {
+				echo('<P>An error occurred.</P>');
+			};
+		};
+		
+		
 		break;
 	case 'GET':
 		break;
@@ -125,7 +169,7 @@ foreach($filelist as $thisFile) {
 };
 
 if($found) {
-	echo('<br/><input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Restore"/>');
+	echo('<br/><input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Restore" onClick="javascript:restoreBackup()"/>');
 	echo('<input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Delete" onClick="javascript:deleteBackup()"/>');
 } else {
 	echo('<P>No backup files found.</P>');
