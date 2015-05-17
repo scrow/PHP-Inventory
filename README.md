@@ -116,8 +116,6 @@ Below is a quick unordered list of current known limitations of PHP-Inventory.  
 
  * It's not pretty.  The focus currently is on basic functionality.  Cosmetic improvements will come later.
  
- * No restore functionality.  Currently there is a provision for creating a backup of the database, but not for restoring from that backup.  This will be resolved in a future (next?) version.
- 
  * Limited reporting capability.  Filtering and report generation (Excel, CSV, etc) may be implemented in the future.
 
 ## Issues and Feature Requests ##
