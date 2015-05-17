@@ -204,6 +204,61 @@ class Inventory extends Database {
 		return $allnull;
 	}
 	
+	public function regenerateThumbs($doall = false) {
+		// Regenerates thumbnail images for all items
+		// Accepts:  $doall .. if false, only generates missing thumbnails
+		//                     if true, deletes existing thumbnails first
+
+		$items = $this->allItems();
+		
+		if($doall) {
+			// Prepare to regenerate all thumbnails
+			foreach($items as $item) {
+				$attachments = $item->getAttachments();
+				foreach($attachments as $attachment) {
+					if($attachment->hasThumbnail()) {
+						// Sanity check before trying to delete the file
+						// Thumbnails might not exist but hasThumbnail() could return true if restoring
+						if(file_exists($attachment->getThumbname())) {
+							unlink($attachment->getThumbname());
+						};
+						$attachment->setAttribute('hasThumb', false);
+					};
+				};
+			};
+		} else {
+			// Prepare to regenerate only missing thumbnails
+			foreach($items as $item) {
+				$attachments = $item->getAttachments();
+				foreach($attachments as $attachment) {
+					if($attachment->hasThumbnail()) {
+						if(!file_exists($attachment->getThumbname())) {
+							$attachment->setAttribute('hasThumb', false);
+						};
+					};
+				};
+			};
+		};
+
+		$attach = 0;
+		$count = 0;
+		$regen = 0;
+		
+		foreach($items as $item) {
+			$count++;
+			$attachments = $item->getAttachments();
+			foreach($attachments as $attachment) {
+				$attach++;
+				if($attachment->hasThumbnail() == false) {
+					$regen++;
+					set_time_limit(300);
+					$attachment->makeThumbnail();
+				};
+			};
+		};
+
+	}
+	
 	public function setAttribute($attribute, $value, $noDbUpdate=false) {
 		// Sets the specified attribute to provided value
 		// $noDbUpdate = true means do not update the database yet
@@ -903,7 +958,7 @@ class Attachment extends Item {
 	
 	public function hasThumbnail() {
 		// returns true/false if a thumbnail exists
-		return ($this->getAttribute('hasThumb', true));
+		return ($this->getAttribute('hasThumb'));
 	}
 	
 	public function getThumbBase64($inline = false) {
@@ -967,8 +1022,10 @@ class Attachment extends Item {
 		$st -> execute(array($this->getAttribute('sha1')));
 		$records = $st->fetch(PDO::FETCH_NUM);
 		if($records[0] == 1) {
-			unlink($this->getFilename());
-			if($this->hasThumbnail()) {
+			if(file_exists($this->getFilename())) {
+				unlink($this->getFilename());			
+			};
+			if($this->hasThumbnail() && file_exists($this->getThumbname())) {
 				unlink($this->getThumbname());
 			};
 		};
