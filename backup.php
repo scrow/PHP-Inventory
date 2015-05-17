@@ -50,20 +50,37 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					// Prompt for confirmation
 					echo('<P>Delete backup file '.trim($filename[0]).'?');
 					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="confirm" VALUE="Confirm"/>');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="confirm" VALUE="Cancel"/>');
+					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Confirm"/>');
+					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Cancel"/>');
 					echo('<INPUT TYPE="HIDDEN" NAME="filename" VALUE="'.trim($filename[0]).'"/>');
 					echo('</FORM>');
 					return true;
 				} else {
-					echo('<P>No file selected 1.</P>');
+					echo('<P>No file selected.</P>');
 				}
 			} else {
-				echo('<P>No file selected 2.</P>');
+				echo('<P>No file selected.</P>');
 			};
 		};
 		
-		if(isset($_POST['confirm']) && ($_POST['confirm']=='Confirm')) {
+		if(isset($_POST['action']) && ($_POST['action']=='Restore')) {
+			if(isset($_POST['filename'])) {
+				$filename = $_POST['filename'];
+				if (trim($filename[0])!=='') {
+					// Prompt for confirmation
+					echo('<P>Restore from backup file '.trim($filename[0]).'?');
+					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
+					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="restoreConfirm" VALUE="Confirm"/>');
+					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Cancel"/>');
+					echo('</FORM>');
+					return true;
+				} else {
+					echo('<P>No file selected.</P>');
+				};
+			};
+		};
+		
+		if(isset($_POST['delConfirm']) && ($_POST['delConfirm']=='Confirm')) {
 			if(isset($_POST['filename'])) {
 				// Strip out any forward slashes for security
 				$filename = 'backups/'.preg_replace('#/+#', '', $_POST['filename']);
