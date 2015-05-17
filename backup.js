@@ -31,3 +31,14 @@ function restoreBackup () {
 	document.backupForm.submit();
 	disableInputs();
 };
+
+function confirmRestore() {
+	alert('Restoring from a backup may take a long time to complete. Please be patient and do not close your browser or refresh the page.');
+	document.backupForm.restoreConfirm.value = 'Confirm';
+	var length = document.backupForm['restoreConfirmBtn[]'].length;
+	document.getElementById('message').innerHTML = '<P>Restoring from backup file, please wait...</P>';
+	document.backupForm.submit();
+	for (var i =0; i < length; i++) {
+		document.backupForm['restoreConfirmBtn[]'][i].disabled = true;
+	};
+};

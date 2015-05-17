@@ -71,10 +71,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					// Prompt for confirmation
 					echo('<P>Restore from backup file '.trim($filename[0]).'?');
 					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="restoreConfirm" VALUE="Confirm"/>');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="restoreConfirm" VALUE="Cancel"/>');
+					echo('<INPUT TYPE="HIDDEN" NAME="restoreConfirm" VALUE=""/>');
+					echo('<INPUT CLASS="shortButton" TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Confirm" onClick="javascript:confirmRestore()"/>');
+					echo('<INPUT CLASS="shortButton" TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Cancel" onClick="javascript:confirmRestore()"/>');
 					echo('<INPUT TYPE="HIDDEN" NAME="filename" VALUE="'.trim($filename[0]).'"/>');
 					echo('</FORM>');
+					echo('<SPAN ID="message"></SPAN>');
 					return true;
 				} else {
 					echo('<P>No file selected.</P>');
@@ -128,14 +130,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					};
 
 					// do the database restore
-					$db->import('items',$tempfolder.'/items.csv');
+					// Important:  Restoration of locations, groups, and attachments must be completed
+					//   before restoring the items.
 					$db->import('locations',$tempfolder.'/locations.csv');
 					$db->import('groups',$tempfolder.'/groups.csv');
 					$db->import('attachments',$tempfolder.'/attachments.csv');
-					unlink($tempfolder.'/items.csv');
+					$db->import('items',$tempfolder.'/items.csv');
 					unlink($tempfolder.'/locations.csv');
 					unlink($tempfolder.'/groups.csv');
 					unlink($tempfolder.'/attachments.csv');
+					unlink($tempfolder.'/items.csv');
 
 					// Re-read the database
 					unset($inv);
