@@ -97,7 +97,10 @@ CREATE TABLE `locations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-
+# Set up default values
+# ------------------------------------------------------------
+INSERT INTO `locations` (`shortName`) VALUES (' * Default');
+INSERT INTO `groups` (`shortName`) VALUES (' * Default');
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

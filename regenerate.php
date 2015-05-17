@@ -1,35 +1,16 @@
 <?php 
- /** This is regenerate.php
-  ** Regenerates thumbnail images if Imagemagick is installed.
-  **/
-
-if (!class_exists('Imagick',false)) {
-	die('ImageMagick is not installed in PHP.');
-};
+	/**
+	  * Calls the Inventory::regenerateThumbs() function
+	  * regenerateThumbs(false) regenerates only missing thumbnails (file is missing or hasThumbnail()==false)
+	  * regenerateThumbs(true) regenerates all thumbnails, removing any existing thumbnail files first
+	  */
+ini_set('max_execution_time', 600);
 
 require_once('classes.inc.php');
 
 $inv = new Inventory();
 
-$items = $inv->allItems();
-
-$attach = 0;
-$count = 0;
-$regen = 0;
-
-foreach($items as $item) {
-	$count++;
-	$attachments = $item->getAttachments();
-	foreach($attachments as $attachment) {
-		$attach++;
-		if($attachment->getAttribute('hasThumbnail') == false) {
-			$regen++;
-			$attachment->makeThumbnail();
-		};
-	};
-};
-
-echo('Processed '.$attach.' attachments for '.$count.' items, and regenerated '.$regen);
+$inv->regenerateThumbs(false);
 
 unset($inv);
 
