@@ -25,3 +25,9 @@ function deleteBackup() {
 	document.backupForm.submit();
 	disableInputs();
 };
+
+function restoreBackup () {
+	document.backupForm.action.value = 'Restore';
+	document.backupForm.submit();
+	disableInputs();
+};
