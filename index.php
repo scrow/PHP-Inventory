@@ -15,7 +15,7 @@ require_once('globals.inc.php');
 		<P>
 			<A HREF="item.php">New Item</A> <BR/>
 			<A HREF="allitems.php">All Items</A> <BR/>
-			<A HREF="backup.php">Database Backup and Restore</A>
+			<A HREF="backup.php">Database Backup or Restore</A>
 		</P>
 
 	</BODY>
