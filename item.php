@@ -7,13 +7,18 @@ require_once('globals.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  Add/Edit Item</TITLE>
-		<LINK REL="stylesheet" HREF="styles.css"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<TITLE>Personal Inventory - Add/Edit Item</TITLE>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css"
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css"
 		<SCRIPT SRC="dropdowns.js"> </SCRIPT>
 		<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
 	</HEAD>
 	<BODY>
-		<H1>View/Edit Item</H1>
+		<div class="container">
+		<H1>Add/View/Edit Item</H1>
 
 <?php
 
@@ -350,58 +355,91 @@ $output = <<<EOD
 <FORM METHOD="POST" ENCTYPE="multipart/form-data" ACTION="item.php" ID="itemForm">
 	<INPUT TYPE="hidden" NAME="id" ID="id" VALUE="{$id}"/>
 
+	<div class="form-group">
 	<LABEL FOR="shortName">Short Name (or Title):</LABEL>
 	<INPUT TYPE="TEXT" NAME="shortName" ID="shortName" MAXLENGTH=64 VALUE="{$attributes['shortName']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="make">Make (or Author):</LABEL>
 	<INPUT TYPE="TEXT" NAME="make" ID="make" MAXLENGTH=32 VALUE="{$attributes['make']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="model">Model (or Edition):</LABEL>
 	<INPUT TYPE="TEXT" NAME="model" ID="model" VALUE="{$attributes['model']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="serial">Serial:</LABEL>
 	<INPUT TYPE="TEXT" NAME="serial" ID="serial" VALUE="{$attributes['serial']}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="upc">UPC (or ISBN): [<A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="upc" ID="upc" VALUE="{$attributes['upc']}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="purchaseDate">Purchase Date:</LABEL>
 	<INPUT TYPE="TEXT" NAME="purchaseDate" ID="purchaseDate" VALUE="{$purchaseDate}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="purchasePrice">Purchase Price:</LABEL>
 	<INPUT TYPE="TEXT" NAME="purchasePrice" ID="purchasePrice" VALUE="{$purchasePrice}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="warrantyExp">Warranty Expiration:</LABEL>
 	<INPUT TYPE="TEXT" NAME="warrantyExp" ID="warrantyExp" VALUE="{$warrantyExp}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="saleValue">Current Sale Value:</LABEL>
 	<INPUT TYPE="TEXT" NAME="saleValue" ID="saleValue" VALUE="{$saleValue}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="replacementValue">Current Replacement Value:</LABEL>
 	<INPUT TYPE="TEXT" NAME="replacementValue" ID="replacementValue" VALUE="{$replacementValue}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="valueDate">Values as of Date: [<A HREF="javascript:getDate('valueDate')">Today</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="valueDate" ID="valueDate" VALUE="{$valueDate}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="url">URL: [<A HREF="javascript:viewURL('url')">View</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="url" ID="url" VALUE="{$attributes['url']}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="amazonASIN">Amazon ASIN: [<A HREF="javascript:viewASIN('amazonASIN')">View</A>]</LABEL>
 	<INPUT TYPE="TEXT" NAME="amazonASIN" ID="amazonASIN" VALUE="{$attributes['amazonASIN']}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="location">Location:</LABEL>
 	<SELECT NAME="location" onChange="getNewLocation('location')" ID="location">{$locationOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="group">Group:</LABEL>
 	<SELECT NAME="group" onChange="getNewGroup('group')" ID="group">{$groupOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	</div>
 	
-	<LABEL FOR="notes">Notes:</LABEL>
-	<TEXTAREA NAME="notes" ID="notes" MAXLENGTH=65535>{$attributes['notes']}</TEXTAREA>
+	<div class="form-group">
 
+	<TEXTAREA NAME="notes" ID="notes" rows="5">{$attributes['notes']}Notes...</TEXTAREA>
+	</div>
+	
 	{$existingAttachments}			
-		
+	
+	<div class="form-group">	
 	<LABEL FOR="attachments">Add Attachments:</LABEL>
-	<DIV ID="attach" CLASS="filebox">
+	<DIV ID="attach">
 		<INPUT TYPE="HIDDEN" NAME="MAX_FILE_SIZE" VALUE="16777216"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
@@ -409,23 +447,32 @@ $output = <<<EOD
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 	</DIV>
+	</div>	
 		
-	<INPUT TYPE="SUBMIT" NAME="Save" VALUE="Save" ID="Save"/>
+	<INPUT TYPE="SUBMIT" NAME="Save" VALUE="Save" ID="Save" class="btn btn-default"/>
 EOD;
 
 if($showDeleteBtn) {
 	$output = $output . <<<EOD
-		<INPUT TYPE="SUBMIT" NAME="Delete" VALUE="Delete Item" ID="Delete"/>
+		<INPUT TYPE="SUBMIT" NAME="Delete" VALUE="Delete Item" ID="Delete" class="btn btn-danger"/>
 EOD;
 };
 $output = $output . <<<EOD
-		<INPUT TYPE="RESET" NAME="Reset" VALUE="Reset" ID="Reset" onClick="form.shortName.focus()"/>
+		<INPUT TYPE="RESET" NAME="Reset" VALUE="Reset" ID="Reset" onClick="form.shortName.focus()" class="btn btn-warning"/>
 </FORM>
 EOD;
 echo $output;
 
 ?>
 <?php include('footer.php');?>
+
+		</div>
+		
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 
 	</BODY>
 </HTML>
