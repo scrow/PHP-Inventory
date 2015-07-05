@@ -11,10 +11,9 @@ require_once('globals.inc.php');
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<TITLE>Personal Inventory - Add/Edit Item</TITLE>
-		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css"
-		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css"
-		<SCRIPT SRC="dropdowns.js"> </SCRIPT>
-		<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css">
+
 	</HEAD>
 	<BODY>
 		<div class="container">
@@ -376,7 +375,7 @@ $output = <<<EOD
 	</div>
 	
 	<div class="form-group">
-	<LABEL FOR="upc">UPC (or ISBN): [<A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A>]</LABEL>
+	<LABEL FOR="upc">UPC (or ISBN): <A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="upc" ID="upc" VALUE="{$attributes['upc']}"/>
 	</div>
 
@@ -406,28 +405,34 @@ $output = <<<EOD
 	</div>
 	
 	<div class="form-group">
-	<LABEL FOR="valueDate">Values as of Date: [<A HREF="javascript:getDate('valueDate')">Today</A>]</LABEL>
+	<LABEL FOR="valueDate">Values as of Date: <A HREF="javascript:getDate('valueDate')">Today</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="valueDate" ID="valueDate" VALUE="{$valueDate}"/>
 	</div>
 	
 	<div class="form-group">
-	<LABEL FOR="url">URL: [<A HREF="javascript:viewURL('url')">View</A>]</LABEL>
+	<LABEL FOR="url">URL: <A HREF="javascript:viewURL('url')">View</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="url" ID="url" VALUE="{$attributes['url']}"/>
 	</div>
 
 	<div class="form-group">
-	<LABEL FOR="amazonASIN">Amazon ASIN: [<A HREF="javascript:viewASIN('amazonASIN')">View</A>]</LABEL>
+	<LABEL FOR="amazonASIN">Amazon ASIN: <A HREF="javascript:viewASIN('amazonASIN')">View</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="amazonASIN" ID="amazonASIN" VALUE="{$attributes['amazonASIN']}"/>
 	</div>
 
 	<div class="form-group">
 	<LABEL FOR="location">Location:</LABEL>
-	<SELECT NAME="location" onChange="getNewLocation('location')" ID="location">{$locationOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	<SELECT NAME="location" onChange="getNewLocation('location')" ID="location">{$locationOptions}
+	<option value="">Other</option>
+	<OPTION VALUE="">Create new...</OPTION>
+	</SELECT>
 	</div>
 	
 	<div class="form-group">
 	<LABEL FOR="group">Group:</LABEL>
-	<SELECT NAME="group" onChange="getNewGroup('group')" ID="group">{$groupOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	<SELECT NAME="group" onChange="getNewGroup('group')" ID="group">{$groupOptions}
+	<option value="">Other</option>
+	<OPTION VALUE="">Create new...</OPTION>
+	</SELECT>
 	</div>
 	
 	<div class="form-group">
@@ -467,8 +472,8 @@ echo $output;
 <?php include('footer.php');?>
 
 		</div>
-		
-
+	<SCRIPT SRC="dropdowns.js"> </SCRIPT>
+	<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
