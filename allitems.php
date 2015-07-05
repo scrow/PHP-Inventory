@@ -17,11 +17,16 @@ require_once('globals.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  Item Listing</TITLE>
-		<LINK REL="stylesheet" HREF="styles.css"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<TITLE>Personal Inventory - Item Listing</TITLE>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css"
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css"
 		<SCRIPT SRC="dropdowns.js"></SCRIPT>
 	</HEAD>
 	<BODY>
+		<div class="container">
 <?php
 
 function mkPrettyDollars($str) {
@@ -407,21 +412,58 @@ EOT;
 $totalvalueText = mkPrettyDollars($totalvalue);
 $output = <<<EOT
 	</TABLE>
-	<P>Total inventory value: $totalvalueText</P>
-	<DIV CLASS="formControlBlock">
-	<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="" CHECKED/> No action
-	<BR/><INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="delete"/> Delete Selected Items
-	<BR/><DIV CLASS="comboLabel"><INPUT TYPE="RADIO" NAME="action" ID="action1" VALUE="changegroup"/> Assign to group:</DIV><SELECT NAME="group" onChange="getNewGroup('group')" ID="group" CLASS="comboDropdown" onClick="javascript:document.getElementById('action1').checked=true">{$groupOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
-	<BR/><DIV CLASS="comboLabel"><INPUT TYPE="RADIO" NAME="action" ID="action2" VALUE="changelocation"/> Move to location:</DIV><SELECT NAME="location" onChange="getNewLocation('location')" ID="location" CLASS="comboDropdown" onClick="javascript:document.getElementById('action2').checked=true">{$locationOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
-	<BR/>$insert
-	<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Submit"/>
-	<INPUT TYPE="RESET" NAME="reset" ID="reset" VALUE="Reset"/>
-	</DIV>
+	<P class="lead">Total inventory value: $totalvalueText</P>
+	
+	<form>
+	
+	<DIV class="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="" CHECKED/> 
+			No action
+		</label>
+	</div>
+	
+	<div class="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="delete"/> 
+			Delete Selected Items
+		</label>
+	</div>
+	
+	<DIV CLASS="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action1" VALUE="changegroup"/> 
+			Assign to group:
+		</label>
+		<SELECT NAME="group" onChange="getNewGroup('group')" ID="group" CLASS="comboDropdown" onClick="javascript:document.getElementById('action1').checked=true">{$groupOptions}
+		<OPTION VALUE="">Create new...</OPTION></SELECT>
+		</DIV>
+	
+	<DIV CLASS="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action2" VALUE="changelocation"/> 
+			Move to location:
+		</label>
+		<SELECT NAME="location" onChange="getNewLocation('location')" ID="location" CLASS="comboDropdown" onClick="javascript:document.getElementById('action2').checked=true">{$locationOptions}
+		<OPTION VALUE="">Create new...</OPTION></SELECT>
+	</div>
+	
+	$insert
+	
+	<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Submit" class="btn btn-default"/>
+	<INPUT TYPE="RESET" NAME="reset" ID="reset" VALUE="Reset" class="btn btn-warning"/>
+	
+	
 	</FORM>
 EOT;
 echo $output;
 ?>
 <?php include('footer.php');?>
+	</div>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 	</BODY>
 </HTML>
 
