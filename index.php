@@ -10,8 +10,8 @@ require_once('globals.inc.php');
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<TITLE>Personal Inventory - Main</TITLE>
-		<LINK REL="stylesheet" href="bootstrap/dist/css/bootstrap.css"
-		<link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.css"
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css"
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css"
 	</HEAD>
 	<BODY>
 	<div class="container">
@@ -27,7 +27,7 @@ require_once('globals.inc.php');
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="bootstrap/dist/js/bootstrap.js"></script>
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 
 	</BODY>
 </HTML>
