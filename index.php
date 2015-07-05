@@ -18,9 +18,9 @@ require_once('globals.inc.php');
 		<H1>Personal Inventory</H1>
 
 		<P>
-			<A HREF="item.php" class="btn btn-success" role="button">New Item</A>
+			<A HREF="item.php" class="btn btn-default" role="button">New Item</A>
 			<A HREF="allitems.php" role="button" class="btn btn-info">All Items</A>
-			<A HREF="backup.php" role="button" class="btn btn-danger">Database Backup or Restore</A>
+			<A HREF="backup.php" role="button" class="btn btn-success">Database Backup or Restore</A>
 		</P>
 	</div>
 		
