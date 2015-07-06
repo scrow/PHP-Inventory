@@ -107,7 +107,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			} else {
 				$item = $inv->getItem($_POST['id']);
 				if($item == false) {
-					die('Invalid item id.');
+					die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid Item ID </div>');
 				};				
 			}
 			
@@ -192,10 +193,12 @@ EOT;
 			$hiddenFields = $hiddenFields . '<INPUT TYPE="HIDDEN" NAME="location" ID="location" VALUE="'.$inv->getLocation($attributes['location'])->getAttribute('shortName').'"/>';
 			$output = <<<EOT
 <FORM METHOD="POST" ACTION="item.php">
-<P>Delete this item?<BR/>
-{$attributes['shortName']}</P>
-<INPUT TYPE="SUBMIT" NAME="Delete_Confirm" ID="Delete_Confirm" VALUE="Yes"/>
-<INPUT TYPE="SUBMIT" NAME="Delete_Cancel" ID="Delete_Cancel" VALUE="No"/>
+<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Do you really want to delete the folowing items?
+	<BR/>
+{$attributes['shortName']}</div>
+<INPUT TYPE="SUBMIT" NAME="Delete_Confirm" ID="Delete_Confirm" VALUE="Yes" class="btn btn-danger" />
+<INPUT TYPE="SUBMIT" NAME="Delete_Cancel" ID="Delete_Cancel" VALUE="No" class="btn btn-default"/>
 {$hiddenFields}
 </FORM>
 EOT;
@@ -205,7 +208,7 @@ EOT;
 		if(isset($_POST['Delete_Confirm'])) {
 			// User confirmed delete
 			$inv->deleteItem($_POST['id']);
-			echo('<P>Item deleted.</P>');
+			echo('<div class="alert alert-success" role="alert"> <span class="glyphicon glyphicon-ok"></span> Item Successfully Deleted </div> ');
 			$item = new NullItem();
 			$attributes = $item->getAttributes();
 			$id = $attributes['id'];
@@ -230,7 +233,8 @@ EOT;
 			// Load an existing item for editing
 			$item = $inv -> getItem($_GET['id']);
 			if(!$item) {
-				die('Invalid item id');
+				die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid Item ID </div>');
 			} else {
 				$attributes = $item->getAttributes();
 				$id = $attributes['id'];
@@ -249,7 +253,8 @@ EOT;
 		break;
 		
 	default:
-		die('Invalid request method');
+		die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid request method </div>');
 		break;
 };
 		
@@ -294,7 +299,7 @@ if(sizeof($attachments)==0) {
 			};
 		};
 		$existingAttachments = $existingAttachments . <<<EOT
-<DIV CLASS="formLabel"><A HREF="dl.php?id={$item->getAttribute('id')}&attachment={$attachment->getAttribute('id')}" TARGET="_blank"><IMG SRC="{$filebase64}" WIDTH={$displayWidth} HEIGHT={$displayHeight} BORDER=1/></A></DIV>
+<DIV><A HREF="dl.php?id={$item->getAttribute('id')}&attachment={$attachment->getAttribute('id')}" TARGET="_blank"><IMG SRC="{$filebase64}" WIDTH={$displayWidth} HEIGHT={$displayHeight} BORDER=1/></A></DIV>
 EOT;
 		if($item->getAttribute('receiptImg')==$attachment->getAttribute('id')) {
 			$receiptImgChecked=" CHECKED";
