@@ -215,7 +215,9 @@ EOT;
 		
 		// Do default output, since user isn't deleting and we have actually saved any changes
 		if($item->isValid()) {
-			echo('<P>Saved.</P>');
+			echo('<div class="alert alert-success" role="alert">
+					<span class="glyphicon glyphicon-ok"></span> Item Successfully Saved
+					</div>');
 		};
 		
 		$showDeleteBtn=true;
