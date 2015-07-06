@@ -264,7 +264,6 @@ if(!$found) {
 	echo('<br/>');
 };
 echo('<input type="button" name="actionBtn" id="actionBtn[]" VALUE="Create Backup" onClick="javascript:createBackup()" class="btn btn-default"/>');
-
 echo('</FORM>');
 echo('<SPAN ID="message"></SPAN>');
 ?>
