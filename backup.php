@@ -5,12 +5,15 @@ require_once('classes.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  Database Backup and Restore</TITLE>
-		<LINK REL="stylesheet" HREF="styles.css"/>
-		<SCRIPT SRC="dropdowns.js"> </SCRIPT>
-		<SCRIPT SRC="backup.js"> </SCRIPT>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<TITLE>Personal Inventory - Backup Database and Restore</TITLE>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css"
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css"
 	</HEAD>
 	<BODY>
+		<div class="container">
 		<H1>Database Backup and Restore</H1>
 
 <?php
@@ -41,7 +44,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			unlink('locations.csv');
 			unlink('groups.csv');
 
-			echo('<p>Backup created.</p>');	
+			echo('<p class="lead">Backup created.</p>');	
 		};
 
 		if(isset($_POST['action']) && ($_POST['action']=='Delete')) {
@@ -51,16 +54,20 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					// Prompt for confirmation
 					echo('<P>Delete backup file '.trim($filename[0]).'?');
 					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Confirm"/>');
-					echo('<INPUT CLASS="shortButton" TYPE="submit" NAME="delConfirm" VALUE="Cancel"/>');
+					echo('<INPUT TYPE="submit" NAME="delConfirm" VALUE="Confirm" class="btn btn-danger"/>');
+					echo('<INPUT TYPE="submit" NAME="delConfirm" VALUE="Cancel" class="btn btn-deafult"/>');
 					echo('<INPUT TYPE="HIDDEN" NAME="filename" VALUE="'.trim($filename[0]).'"/>');
 					echo('</FORM>');
 					return true;
 				} else {
-					echo('<P>No file selected.</P>');
+					echo('<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> No File Selected
+					</div>');
 				}
 			} else {
-				echo('<P>No file selected.</P>');
+				echo('<div class="alert alert-danger" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign"></span> No File Selected
+				</div>');
 			};
 		};
 		
@@ -72,17 +79,22 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					echo('<P>Restore from backup file '.trim($filename[0]).'?');
 					echo('<FORM NAME="backupForm" ACTION="backup.php" METHOD="POST">');
 					echo('<INPUT TYPE="HIDDEN" NAME="restoreConfirm" VALUE=""/>');
-					echo('<INPUT CLASS="shortButton" TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Confirm" onClick="javascript:confirmRestore()"/>');
-					echo('<INPUT CLASS="shortButton" TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Cancel" onClick="javascript:confirmRestore()"/>');
+					echo('<INPUT TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Confirm" onClick="javascript:confirmRestore()" class="btn btn-danger"/>');
+					echo('<INPUT TYPE="button" NAME="restoreConfirmBtn[]" ID="restoreConfirmBtn[]" VALUE="Cancel" onClick="javascript:confirmRestore()" class="btn btn-default"/>');
 					echo('<INPUT TYPE="HIDDEN" NAME="filename" VALUE="'.trim($filename[0]).'"/>');
 					echo('</FORM>');
 					echo('<SPAN ID="message"></SPAN>');
+					echo('<SCRIPT SRC="backup.js"> </SCRIPT>');
 					return true;
 				} else {
-					echo('<P>No file selected.</P>');
+					echo('<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> No File Selected
+					</div>');
 				};
 			} else {
-				echo('<P>No file selected.</P>');
+				echo('<div class="alert alert-danger" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign"></span> No File Selected
+				</div>');
 			};
 		};
 		
@@ -91,13 +103,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				// Strip out any forward slashes for security
 				$filename = 'backups/'.preg_replace('#/+#', '', $_POST['filename']);
 				if(!file_exists($filename)) {
-					echo('<P>File not found.</P>');
+					echo('<P class="lead">File not found.</P>');
 				} else {
 					unlink($filename);
-					echo('<P>Deleted.</P>');
+					echo('<div class="alert alert-success" role="alert">
+					<span class="glyphicon glyphicon-ok"></span> File Successfully Deleted
+					</div>');
 				};
 			} else {
-				die('<P>An error occurred.</P>');
+				die('<div class="alert alert-danger" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign"></span> An Error Occurred
+				</div>');
 			};
 		};
 		
@@ -110,7 +126,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				$filename = preg_replace('`/+`', '', $filename);
 				$filename = 'backups/'.preg_replace("'/+'", '', $filename);
 				if(!file_exists($filename)) {
-					echo('<P>File '.$filename.' not found.</P>');
+					echo('<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> File '.$filename.' Not Found
+					</div>');
 				} else {
 					// Set up a temp folder
 					if(!file_exists('tmp')) mkdir('tmp');
@@ -189,11 +207,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					};
 					recursiveRemoveDirectory($tempfolder);
 					
-					echo('<p>Restore complete.</p>');
+					echo('<div class="alert alert-success" role="alert">
+					<span class="glyphicon glyphicon-ok"></span> Restoration Successfully Completed
+					</div>');
 
 				};
 			} else {
-				echo('<P>An error occurred.</P>');
+				echo('<div class="alert alert-danger" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign"></span> An Error Occurred
+				</div>');
 			};
 		};
 		
@@ -205,7 +227,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		break;
 };
 
-echo('<p>Backup files:</p>');
+echo('<p class="lead">Backup files:</p>');
 echo('<FORM NAME="backupForm" ID="backupForm" ACTION="backup.php" METHOD="POST">');
 echo('<INPUT TYPE="HIDDEN" NAME="action" ID="action" VALUE="">');
 
@@ -226,27 +248,35 @@ $found = false;
 foreach($filelist as $thisFile) {
 	if(strtolower(pathinfo('backups/'.$thisFile, PATHINFO_EXTENSION))=='zip') {
 		$info = date('D M j, Y g:i a',filemtime('backups/'.$thisFile)).'; '.number_format(filesize('backups/'.$thisFile)).' bytes';
-		echo($br . '<INPUT TYPE="RADIO" NAME="filename[]" ID="filename[]" VALUE="'.$thisFile.'"/>&nbsp;'.'<A HREF="backups/'.$thisFile.'">'.$thisFile.'</A> - '.$info);
+		echo($br . '<div class="radio"> <label> <INPUT TYPE="RADIO" NAME="filename[]" ID="filename[]" VALUE="'.$thisFile.'"/> &nbsp;'.'<A HREF="backups/'.$thisFile.'">'.$thisFile.'</A> - '.$info.'</label>');
 		$found = true;
 		$br = '<br/>';
 	};
 };
 
 if($found) {
-	echo('<br/><input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Restore" onClick="javascript:restoreBackup()"/>');
-	echo('<input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Delete" onClick="javascript:deleteBackup()"/>');
+	echo('<br/><input type="button" name="actionBtn" id="actionBtn[]" VALUE="Restore" onClick="javascript:restoreBackup()" class="btn btn-success"/>');
+	echo('<input type="button" name="actionBtn" id="actionBtn[]" VALUE="Delete" onClick="javascript:deleteBackup()" class="btn btn-danger"/>');
 } else {
 	echo('<P>No backup files found.</P>');
 }
 if(!$found) {
 	echo('<br/>');
 };
-echo('<input class="shortButton" type="button" name="actionBtn" id="actionBtn[]" VALUE="Create Backup" onClick="javascript:createBackup()"/>');
+echo('<input type="button" name="actionBtn" id="actionBtn[]" VALUE="Create Backup" onClick="javascript:createBackup()" class="btn btn-default"/>');
 
 echo('</FORM>');
 echo('<SPAN ID="message"></SPAN>');
 ?>
 <?php include('footer.php');?>
 
+
+	</div>
+	<SCRIPT SRC="dropdowns.js"> </SCRIPT>
+	<SCRIPT SRC="backup.js"> </SCRIPT>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 	</BODY>
 </HTML>
