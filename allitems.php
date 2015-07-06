@@ -158,7 +158,9 @@ switch($_SERVER['REQUEST_METHOD']) {
 
 		if(!isset($_POST['id'])) {
 			// Not a valid form submission;  show an error
-			echo('<P>No items selected.</P>');
+			echo('<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> No Item(s) Selected
+					</div>');
 		} else {
 			
 			switch ($_POST['action']) {
@@ -206,8 +208,8 @@ switch($_SERVER['REQUEST_METHOD']) {
 					break;
 				case 'delete':
 					$output = <<<EOT
-$title
-<P>Really delete these items?
+<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> Do you really want to delete the folowing items?
 EOT;
 					foreach(array_keys($_POST['id']) as $id) {
 						$item = $inv->getItem($id);
@@ -217,7 +219,7 @@ EOT;
 					};
 
 					$output = $output . <<<EOT
-</P><FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
+</div><FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
 EOT;
 
 					foreach(array_keys($_POST['id']) as $id) {
@@ -240,8 +242,8 @@ EOT;
 					
 					$output = $output . <<<EOT
 <INPUT TYPE="HIDDEN" NAME="action" ID="action" VALUE="deleteconfirm"/>
-<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Delete">
-<INPUT TYPE="BUTTON" NAME="cancel" ID="cancel" VALUE="Cancel" onClick="javascript:history(-1)">
+<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Delete" class="btn btn-danger"/>
+<INPUT TYPE="BUTTON" NAME="cancel" ID="cancel" VALUE="Cancel" class="btn btn-default" onclick="window.history.go(-1)"; return false;>
 EOT;
 					die($output);
 
@@ -322,7 +324,7 @@ EOT;
 $totalvalue=0;
 
 $output = <<<EOT
-<TABLE WIDTH=100% CELLSPACING=2 CELLPADDING=1 BORDER=1>	
+<TABLE class="table table-striped">	
 <FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
 EOT;
 echo $output;
