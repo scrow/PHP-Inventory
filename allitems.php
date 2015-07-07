@@ -17,11 +17,16 @@ require_once('globals.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  Item Listing</TITLE>
-		<LINK REL="stylesheet" HREF="styles.css"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<TITLE>Personal Inventory - Item Listing</TITLE>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css">
 		<SCRIPT SRC="dropdowns.js"></SCRIPT>
 	</HEAD>
 	<BODY>
+		<div class="container">
 <?php
 
 function mkPrettyDollars($str) {
@@ -153,7 +158,9 @@ switch($_SERVER['REQUEST_METHOD']) {
 
 		if(!isset($_POST['id'])) {
 			// Not a valid form submission;  show an error
-			echo('<P>No items selected.</P>');
+			echo('<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> No Item(s) Selected
+					</div>');
 		} else {
 			
 			switch ($_POST['action']) {
@@ -201,8 +208,8 @@ switch($_SERVER['REQUEST_METHOD']) {
 					break;
 				case 'delete':
 					$output = <<<EOT
-$title
-<P>Really delete these items?
+<div class="alert alert-danger" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"></span> Do you really want to delete the folowing items?
 EOT;
 					foreach(array_keys($_POST['id']) as $id) {
 						$item = $inv->getItem($id);
@@ -212,7 +219,7 @@ EOT;
 					};
 
 					$output = $output . <<<EOT
-</P><FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
+</div><FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
 EOT;
 
 					foreach(array_keys($_POST['id']) as $id) {
@@ -235,8 +242,8 @@ EOT;
 					
 					$output = $output . <<<EOT
 <INPUT TYPE="HIDDEN" NAME="action" ID="action" VALUE="deleteconfirm"/>
-<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Delete">
-<INPUT TYPE="BUTTON" NAME="cancel" ID="cancel" VALUE="Cancel" onClick="javascript:history(-1)">
+<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Delete" class="btn btn-danger"/>
+<INPUT TYPE="BUTTON" NAME="cancel" ID="cancel" VALUE="Cancel" class="btn btn-default" onclick="window.history.go(-1)"; return false;>
 EOT;
 					die($output);
 
@@ -317,7 +324,7 @@ EOT;
 $totalvalue=0;
 
 $output = <<<EOT
-<TABLE WIDTH=100% CELLSPACING=2 CELLPADDING=1 BORDER=1>	
+<TABLE class="table table-striped">	
 <FORM METHOD="POST" ACTION="allitems.php" NAME="form" ID="form">
 EOT;
 echo $output;
@@ -407,21 +414,59 @@ EOT;
 $totalvalueText = mkPrettyDollars($totalvalue);
 $output = <<<EOT
 	</TABLE>
-	<P>Total inventory value: $totalvalueText</P>
-	<DIV CLASS="formControlBlock">
-	<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="" CHECKED/> No action
-	<BR/><INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="delete"/> Delete Selected Items
-	<BR/><DIV CLASS="comboLabel"><INPUT TYPE="RADIO" NAME="action" ID="action1" VALUE="changegroup"/> Assign to group:</DIV><SELECT NAME="group" onChange="getNewGroup('group')" ID="group" CLASS="comboDropdown" onClick="javascript:document.getElementById('action1').checked=true">{$groupOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
-	<BR/><DIV CLASS="comboLabel"><INPUT TYPE="RADIO" NAME="action" ID="action2" VALUE="changelocation"/> Move to location:</DIV><SELECT NAME="location" onChange="getNewLocation('location')" ID="location" CLASS="comboDropdown" onClick="javascript:document.getElementById('action2').checked=true">{$locationOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
-	<BR/>$insert
-	<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Submit"/>
-	<INPUT TYPE="RESET" NAME="reset" ID="reset" VALUE="Reset"/>
-	</DIV>
+	<P class="lead">Total inventory value: $totalvalueText</P>
+	
+	<form>
+	
+	<DIV class="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="" CHECKED/> 
+			No action
+		</label>
+	</div>
+	
+	<div class="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action" VALUE="delete"/> 
+			Delete Selected Items
+		</label>
+	</div>
+	
+	<DIV CLASS="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action1" VALUE="changegroup"/> 
+			Assign to group:
+		</label>
+		<SELECT NAME="group" onChange="getNewGroup('group')" ID="group" CLASS="comboDropdown" onClick="javascript:document.getElementById('action1').checked=true">{$groupOptions}
+		<OPTION VALUE="">Create new...</OPTION></SELECT>
+		</DIV>
+	
+	<DIV CLASS="radio">
+		<label>
+			<INPUT TYPE="RADIO" NAME="action" ID="action2" VALUE="changelocation"/> 
+			Move to location:
+		</label>
+		<SELECT NAME="location" onChange="getNewLocation('location')" ID="location" CLASS="comboDropdown" onClick="javascript:document.getElementById('action2').checked=true">{$locationOptions}
+		<OPTION VALUE="">Create new...</OPTION></SELECT>
+	</div>
+	
+	$insert
+	
+	<INPUT TYPE="SUBMIT" NAME="submit" ID="submit" VALUE="Submit" class="btn btn-default"/>
+	<INPUT TYPE="RESET" NAME="reset" ID="reset" VALUE="Reset" class="btn btn-warning"/>
+	
+	
 	</FORM>
 EOT;
 echo $output;
 ?>
 <?php include('footer.php');?>
+	</div>
+	<SCRIPT SRC="dropdowns.js"></SCRIPT>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 	</BODY>
 </HTML>
 

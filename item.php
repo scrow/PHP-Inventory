@@ -7,13 +7,17 @@ require_once('globals.inc.php');
 
 <HTML>
 	<HEAD>
-		<TITLE>Personal Inventory:  Add/Edit Item</TITLE>
-		<LINK REL="stylesheet" HREF="styles.css"/>
-		<SCRIPT SRC="dropdowns.js"> </SCRIPT>
-		<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<TITLE>Personal Inventory - Add/Edit Item</TITLE>
+		<LINK REL="stylesheet" href="src/less/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="src/less/bootstrap/dist/css/bootstrap-theme.css">
+
 	</HEAD>
 	<BODY>
-		<H1>View/Edit Item</H1>
+		<div class="container">
+		<H1>Add/View/Edit Item</H1>
 
 <?php
 
@@ -103,7 +107,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			} else {
 				$item = $inv->getItem($_POST['id']);
 				if($item == false) {
-					die('Invalid item id.');
+					die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid Item ID </div>');
 				};				
 			}
 			
@@ -188,10 +193,12 @@ EOT;
 			$hiddenFields = $hiddenFields . '<INPUT TYPE="HIDDEN" NAME="location" ID="location" VALUE="'.$inv->getLocation($attributes['location'])->getAttribute('shortName').'"/>';
 			$output = <<<EOT
 <FORM METHOD="POST" ACTION="item.php">
-<P>Delete this item?<BR/>
-{$attributes['shortName']}</P>
-<INPUT TYPE="SUBMIT" NAME="Delete_Confirm" ID="Delete_Confirm" VALUE="Yes"/>
-<INPUT TYPE="SUBMIT" NAME="Delete_Cancel" ID="Delete_Cancel" VALUE="No"/>
+<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Do you really want to delete the folowing items?
+	<BR/>
+{$attributes['shortName']}</div>
+<INPUT TYPE="SUBMIT" NAME="Delete_Confirm" ID="Delete_Confirm" VALUE="Yes" class="btn btn-danger" />
+<INPUT TYPE="SUBMIT" NAME="Delete_Cancel" ID="Delete_Cancel" VALUE="No" class="btn btn-default"/>
 {$hiddenFields}
 </FORM>
 EOT;
@@ -201,7 +208,7 @@ EOT;
 		if(isset($_POST['Delete_Confirm'])) {
 			// User confirmed delete
 			$inv->deleteItem($_POST['id']);
-			echo('<P>Item deleted.</P>');
+			echo('<div class="alert alert-success" role="alert"> <span class="glyphicon glyphicon-ok"></span> Item Successfully Deleted </div> ');
 			$item = new NullItem();
 			$attributes = $item->getAttributes();
 			$id = $attributes['id'];
@@ -211,7 +218,9 @@ EOT;
 		
 		// Do default output, since user isn't deleting and we have actually saved any changes
 		if($item->isValid()) {
-			echo('<P>Saved.</P>');
+			echo('<div class="alert alert-success" role="alert">
+					<span class="glyphicon glyphicon-ok"></span> Item Successfully Saved
+					</div>');
 		};
 		
 		$showDeleteBtn=true;
@@ -224,7 +233,8 @@ EOT;
 			// Load an existing item for editing
 			$item = $inv -> getItem($_GET['id']);
 			if(!$item) {
-				die('Invalid item id');
+				die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid Item ID </div>');
 			} else {
 				$attributes = $item->getAttributes();
 				$id = $attributes['id'];
@@ -243,7 +253,8 @@ EOT;
 		break;
 		
 	default:
-		die('Invalid request method');
+		die('<div class="alert alert-danger" role="alert">
+	<span class="glyphicon glyphicon-exclamation-sign"></span> Invalid request method </div>');
 		break;
 };
 		
@@ -288,7 +299,7 @@ if(sizeof($attachments)==0) {
 			};
 		};
 		$existingAttachments = $existingAttachments . <<<EOT
-<DIV CLASS="formLabel"><A HREF="dl.php?id={$item->getAttribute('id')}&attachment={$attachment->getAttribute('id')}" TARGET="_blank"><IMG SRC="{$filebase64}" WIDTH={$displayWidth} HEIGHT={$displayHeight} BORDER=1/></A></DIV>
+<DIV><A HREF="dl.php?id={$item->getAttribute('id')}&attachment={$attachment->getAttribute('id')}" TARGET="_blank"><IMG SRC="{$filebase64}" WIDTH={$displayWidth} HEIGHT={$displayHeight} BORDER=1/></A></DIV>
 EOT;
 		if($item->getAttribute('receiptImg')==$attachment->getAttribute('id')) {
 			$receiptImgChecked=" CHECKED";
@@ -350,58 +361,97 @@ $output = <<<EOD
 <FORM METHOD="POST" ENCTYPE="multipart/form-data" ACTION="item.php" ID="itemForm">
 	<INPUT TYPE="hidden" NAME="id" ID="id" VALUE="{$id}"/>
 
+	<div class="form-group">
 	<LABEL FOR="shortName">Short Name (or Title):</LABEL>
 	<INPUT TYPE="TEXT" NAME="shortName" ID="shortName" MAXLENGTH=64 VALUE="{$attributes['shortName']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="make">Make (or Author):</LABEL>
 	<INPUT TYPE="TEXT" NAME="make" ID="make" MAXLENGTH=32 VALUE="{$attributes['make']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="model">Model (or Edition):</LABEL>
 	<INPUT TYPE="TEXT" NAME="model" ID="model" VALUE="{$attributes['model']}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="serial">Serial:</LABEL>
 	<INPUT TYPE="TEXT" NAME="serial" ID="serial" VALUE="{$attributes['serial']}"/>
-
-	<LABEL FOR="upc">UPC (or ISBN): [<A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A>]</LABEL>
+	</div>
+	
+	<div class="form-group">
+	<LABEL FOR="upc">UPC (or ISBN): <A HREF="javascript:amazonSearch('upc')">Amazon</A> | <A HREF="javascript:googleSearch('upc')">Google</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="upc" ID="upc" VALUE="{$attributes['upc']}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="purchaseDate">Purchase Date:</LABEL>
 	<INPUT TYPE="TEXT" NAME="purchaseDate" ID="purchaseDate" VALUE="{$purchaseDate}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="purchasePrice">Purchase Price:</LABEL>
 	<INPUT TYPE="TEXT" NAME="purchasePrice" ID="purchasePrice" VALUE="{$purchasePrice}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="warrantyExp">Warranty Expiration:</LABEL>
 	<INPUT TYPE="TEXT" NAME="warrantyExp" ID="warrantyExp" VALUE="{$warrantyExp}"/>
-
+	</div>
+	
+	<div class="form-group">
 	<LABEL FOR="saleValue">Current Sale Value:</LABEL>
 	<INPUT TYPE="TEXT" NAME="saleValue" ID="saleValue" VALUE="{$saleValue}"/>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="replacementValue">Current Replacement Value:</LABEL>
 	<INPUT TYPE="TEXT" NAME="replacementValue" ID="replacementValue" VALUE="{$replacementValue}"/>
-
-	<LABEL FOR="valueDate">Values as of Date: [<A HREF="javascript:getDate('valueDate')">Today</A>]</LABEL>
+	</div>
+	
+	<div class="form-group">
+	<LABEL FOR="valueDate">Values as of Date: <A HREF="javascript:getDate('valueDate')">Today</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="valueDate" ID="valueDate" VALUE="{$valueDate}"/>
-
-	<LABEL FOR="url">URL: [<A HREF="javascript:viewURL('url')">View</A>]</LABEL>
+	</div>
+	
+	<div class="form-group">
+	<LABEL FOR="url">URL: <A HREF="javascript:viewURL('url')">View</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="url" ID="url" VALUE="{$attributes['url']}"/>
+	</div>
 
-	<LABEL FOR="amazonASIN">Amazon ASIN: [<A HREF="javascript:viewASIN('amazonASIN')">View</A>]</LABEL>
+	<div class="form-group">
+	<LABEL FOR="amazonASIN">Amazon ASIN: <A HREF="javascript:viewASIN('amazonASIN')">View</A></LABEL>
 	<INPUT TYPE="TEXT" NAME="amazonASIN" ID="amazonASIN" VALUE="{$attributes['amazonASIN']}"/>
+	</div>
 
+	<div class="form-group">
 	<LABEL FOR="location">Location:</LABEL>
-	<SELECT NAME="location" onChange="getNewLocation('location')" ID="location">{$locationOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	<SELECT NAME="location" onChange="getNewLocation('location')" ID="location">{$locationOptions}
+	<option value="">Other</option>
+	<OPTION VALUE="">Create new...</OPTION>
+	</SELECT>
+	</div>
 	
+	<div class="form-group">
 	<LABEL FOR="group">Group:</LABEL>
-	<SELECT NAME="group" onChange="getNewGroup('group')" ID="group">{$groupOptions}<OPTION VALUE="">Create new...</OPTION></SELECT>
+	<SELECT NAME="group" onChange="getNewGroup('group')" ID="group">{$groupOptions}
+	<option value="">Other</option>
+	<OPTION VALUE="">Create new...</OPTION>
+	</SELECT>
+	</div>
 	
-	<LABEL FOR="notes">Notes:</LABEL>
-	<TEXTAREA NAME="notes" ID="notes" MAXLENGTH=65535>{$attributes['notes']}</TEXTAREA>
+	<div class="form-group">
 
+	<TEXTAREA NAME="notes" ID="notes" rows="5">{$attributes['notes']}Notes...</TEXTAREA>
+	</div>
+	
 	{$existingAttachments}			
-		
+	
+	<div class="form-group">	
 	<LABEL FOR="attachments">Add Attachments:</LABEL>
-	<DIV ID="attach" CLASS="filebox">
+	<DIV ID="attach">
 		<INPUT TYPE="HIDDEN" NAME="MAX_FILE_SIZE" VALUE="16777216"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
@@ -409,23 +459,32 @@ $output = <<<EOD
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 		<INPUT TYPE="FILE" NAME="attachments[]"/>
 	</DIV>
+	</div>	
 		
-	<INPUT TYPE="SUBMIT" NAME="Save" VALUE="Save" ID="Save"/>
+	<INPUT TYPE="SUBMIT" NAME="Save" VALUE="Save" ID="Save" class="btn btn-default"/>
 EOD;
 
 if($showDeleteBtn) {
 	$output = $output . <<<EOD
-		<INPUT TYPE="SUBMIT" NAME="Delete" VALUE="Delete Item" ID="Delete"/>
+		<INPUT TYPE="SUBMIT" NAME="Delete" VALUE="Delete Item" ID="Delete" class="btn btn-danger"/>
 EOD;
 };
 $output = $output . <<<EOD
-		<INPUT TYPE="RESET" NAME="Reset" VALUE="Reset" ID="Reset" onClick="form.shortName.focus()"/>
+		<INPUT TYPE="RESET" NAME="Reset" VALUE="Reset" ID="Reset" onClick="form.shortName.focus()" class="btn btn-warning"/>
 </FORM>
 EOD;
 echo $output;
 
 ?>
 <?php include('footer.php');?>
+
+		</div>
+	<SCRIPT SRC="dropdowns.js"> </SCRIPT>
+	<SCRIPT SRC="itemlinkage.js"> </SCRIPT>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="src/less/bootstrap/dist/js/bootstrap.js"></script>
 
 	</BODY>
 </HTML>

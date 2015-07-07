@@ -1,0 +1,3 @@
+[submodule "src/less/bootstrap"]
+	path = src/less/bootstrap
+	url = git@github.com:rbarden/bootstrap.git
