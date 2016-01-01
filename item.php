@@ -444,7 +444,7 @@ $output = <<<EOD
 	
 	<div class="form-group">
 
-	<TEXTAREA NAME="notes" ID="notes" rows="5">{$attributes['notes']}Notes...</TEXTAREA>
+	<TEXTAREA NAME="notes" ID="notes" rows="5">{$attributes['notes']}</TEXTAREA>
 	</div>
 	
 	{$existingAttachments}			
