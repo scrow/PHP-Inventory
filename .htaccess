@@ -1,0 +1,9 @@
+# Set the maximum allowed file upload size
+php_value post_max_size 32M
+php_value upload_max_filesize 32M
+
+# To secure the folder, use 'htpasswd -c username' to create an .htpasswd file and then uncomment the next four lines:
+#AuthUserFile /vagrant/.htpasswd
+#AuthName "Personal Inventory"
+#AuthType Basic
+#require valid-user
